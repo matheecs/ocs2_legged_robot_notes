@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.urdf": "xml",
+    "*.xml": "xml",
+    "*.cfg": "python",
+    "__locale": "cpp"
+  }
+}
