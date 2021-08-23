@@ -1,3 +1,24 @@
+- [ocs2_legged_robot_annotated](#ocs2_legged_robot_annotated)
+  - [MIT 控制框架](#mit-控制框架)
+  - [ETH 控制框架](#eth-控制框架)
+    - [ROS 节点图](#ros-节点图)
+    - [Class List](#class-list)
+  - [Formulation](#formulation)
+    - [Implementation](#implementation)
+      - [API](#api)
+      - [Example](#example)
+        - [代价 `LeggedRobotStateInputQuadraticCost`](#代价-leggedrobotstateinputquadraticcost)
+        - [等式约束 `ZeroForceConstraint`](#等式约束-zeroforceconstraint)
+        - [动力学模型 `LeggedRobotDynamicsAD`](#动力学模型-leggedrobotdynamicsad)
+        - [`LeggedRobotPreComputation`](#leggedrobotprecomputation)
+        - [`ReferenceManager` <- `SwitchedModelReferenceManager`](#referencemanager---switchedmodelreferencemanager)
+        - [`SolverSynchronizedModule` <- `GaitReceiver`](#solversynchronizedmodule---gaitreceiver)
+  - [Solver](#solver)
+    - [算法](#算法)
+    - [约束处理方法](#约束处理方法)
+  - [References](#references)
+
+
 # ocs2_legged_robot_annotated
 
 | 子文件夹            | 功能                      |
@@ -342,7 +363,7 @@ void LeggedRobotPreComputation::request(RequestSet request, scalar_t t, const ve
 | State-only 等式约束  | Penalty method -> **Augmented Lagrangian**          |
 | 不等式约束           | Relaxed barrier methods -> **Augmented Lagrangian** |
 
-### References
+## References
 
 - [Tutorial on OCS2 Toolbox](https://www.youtube.com/watch?v=RYmQN9GbFYg)
 - [Multi-Layered Safety for Legged Robots via Control Barrier Functions and Model Predictive Control](https://arxiv.org/abs/2011.00032)
