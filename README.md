@@ -16,6 +16,7 @@
   - [Solver](#solver)
     - [算法](#算法)
     - [约束处理方法](#约束处理方法)
+    - [实现细节](#实现细节)
   - [References](#references)
 
 ---
@@ -367,6 +368,90 @@ void LeggedRobotPreComputation::request(RequestSet request, scalar_t t, const ve
 | State-input 等式约束 | Lagrangian method/Projection technique              |
 | State-only 等式约束  | Penalty method -> **Augmented Lagrangian**          |
 | 不等式约束           | Relaxed barrier methods -> **Augmented Lagrangian** |
+
+### 实现细节
+
+核心 Class
+
+- MPC_BASE <- **MPC_DDP**
+- SolverBase <- **GaussNewtonDDP**
+
+```c++
+// FILE: GaussNewtonDDP.cpp
+// DDP main loop
+while (!isConverged && (totalNumIterations_ - initIteration) < ddpSettings_.maxNumIterations_) {
+  // display the iteration's input update norm (before caching the old nominals)
+  if (ddpSettings_.displayInfo_) {
+    std::cerr << "\n###################";
+    std::cerr << "\n#### Iteration " << (totalNumIterations_ - initIteration);
+    std::cerr << "\n###################\n";
+
+    scalar_t maxDeltaUffNorm, maxDeltaUeeNorm;
+    calculateControllerUpdateMaxNorm(maxDeltaUffNorm, maxDeltaUeeNorm);
+    std::cerr << "max feedforward norm: " << maxDeltaUffNorm << "\n";
+  }
+
+  // cache the nominal trajectories before the new rollout (time, state, input, ...)
+  swapDataToCache();
+  performanceIndexHistory_.push_back(performanceIndex_);
+
+  // run the an iteration of the DDP algorithm and update the member variables
+  runIteration(unreliableControllerIncrement);
+
+  // increment iteration counter
+  totalNumIterations_++;
+
+  // check convergence
+  std::tie(isConverged, convergenceInfo) =
+      searchStrategyPtr_->checkConvergence(unreliableControllerIncrement, performanceIndexHistory_.back(), performanceIndex_);
+  unreliableControllerIncrement = false;
+}  // end of while loop
+
+// Runs a single iteration of Gauss-Newton DDP
+void GaussNewtonDDP::runIteration(bool unreliableControllerIncrement) {
+  // disable Eigen multi-threading
+  Eigen::setNbThreads(1);
+
+  // finding the optimal stepLength
+  searchStrategyTimer_.startTimer();
+  // the controller which is designed solely based on operation trajectories possibly has invalid feedforward.
+  // Therefore the expected cost/merit (calculated by the Riccati solution) is not reliable as well.
+  scalar_t expectedCost = unreliableControllerIncrement ? performanceIndex_.merit : sTrajectoryStock_[initActivePartition_].front();
+  runSearchStrategy(expectedCost);
+  searchStrategyTimer_.endTimer();
+
+  // update the constraint penalty coefficients
+  updateConstraintPenalties(performanceIndex_.stateEqConstraintISE, performanceIndex_.stateEqFinalConstraintSSE,
+                            performanceIndex_.stateInputEqConstraintISE);
+
+  // linearizing the dynamics and quadratizing the cost function along nominal trajectories
+  linearQuadraticApproximationTimer_.startTimer();
+  approximateOptimalControlProblem();
+  linearQuadraticApproximationTimer_.endTimer();
+
+  // solve Riccati equations
+  backwardPassTimer_.startTimer();
+  avgTimeStepBP_ = solveSequentialRiccatiEquations(heuristics_.dfdxx, heuristics_.dfdx, heuristics_.f);
+  backwardPassTimer_.endTimer();
+
+  // calculate controller
+  computeControllerTimer_.startTimer();
+  // cache controller
+  cachedControllersStock_.swap(nominalControllersStock_);
+  // update nominal controller
+  calculateController();
+  computeControllerTimer_.endTimer();
+
+  // display
+  if (ddpSettings_.displayInfo_) {
+    printRolloutInfo();
+  }
+
+  // TODO(mspieler): this is not exception safe
+  // restore default Eigen thread number
+  Eigen::setNbThreads(0);
+}
+```
 
 ## References
 
