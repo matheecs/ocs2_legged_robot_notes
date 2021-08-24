@@ -466,5 +466,6 @@ void GaussNewtonDDP::runIteration(bool unreliableControllerIncrement) {
   - [Crocoddyl](https://github.com/loco-3d/crocoddyl)
   - [SCP Toolbox](https://github.com/dmalyuta/scp_traj_opt)
 - [Introduction to Control Lyapunov Functions and Control Barrier Functions](https://www.youtube.com/watch?v=_Tkn_Hzo4AA)
+- [Iterative Linear Quadratic Regulator](https://colab.research.google.com/github/RussTedrake/underactuated/blob/master/exercises/trajopt/ilqr_driving/ilqr_driving.ipynb)
 
 ![](images/mpc.png)
