@@ -465,5 +465,6 @@ void GaussNewtonDDP::runIteration(bool unreliableControllerIncrement) {
   - [OCS2](https://github.com/leggedrobotics/ocs2)
   - [Crocoddyl](https://github.com/loco-3d/crocoddyl)
   - [SCP Toolbox](https://github.com/dmalyuta/scp_traj_opt)
+- [Introduction to Control Lyapunov Functions and Control Barrier Functions](https://www.youtube.com/watch?v=_Tkn_Hzo4AA)
 
 ![](images/mpc.png)
