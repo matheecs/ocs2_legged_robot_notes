@@ -36,9 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotInitializer::LeggedRobotInitializer(
     CentroidalModelInfo info,
     const SwitchedModelReferenceManager& referenceManager,
@@ -47,16 +44,10 @@ LeggedRobotInitializer::LeggedRobotInitializer(
       referenceManagerPtr_(&referenceManager),
       extendNormalizedMomentum_(extendNormalizedMomentum) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotInitializer* LeggedRobotInitializer::clone() const {
   return new LeggedRobotInitializer(*this);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotInitializer::compute(scalar_t time, const vector_t& state,
                                      scalar_t nextTime, vector_t& input,
                                      vector_t& nextState) {

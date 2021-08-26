@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 EndEffectorLinearConstraint::EndEffectorLinearConstraint(
     const EndEffectorKinematics<scalar_t>& endEffectorKinematics,
     size_t numConstraints, Config config)
@@ -49,9 +46,6 @@ EndEffectorLinearConstraint::EndEffectorLinearConstraint(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 EndEffectorLinearConstraint::EndEffectorLinearConstraint(
     const EndEffectorLinearConstraint& rhs)
     : StateInputConstraint(rhs),
@@ -59,9 +53,6 @@ EndEffectorLinearConstraint::EndEffectorLinearConstraint(
       numConstraints_(rhs.numConstraints_),
       config_(rhs.config_) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void EndEffectorLinearConstraint::configure(Config&& config) {
   assert(config.b.rows() == numConstraints_);
   assert(config.Ax.size() > 0 || config.Av.size());
@@ -72,9 +63,6 @@ void EndEffectorLinearConstraint::configure(Config&& config) {
   config_ = std::move(config);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 vector_t EndEffectorLinearConstraint::getValue(
     scalar_t time, const vector_t& state, const vector_t& input,
     const PreComputation& preComp) const {
@@ -90,9 +78,6 @@ vector_t EndEffectorLinearConstraint::getValue(
   return f;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 VectorFunctionLinearApproximation
 EndEffectorLinearConstraint::getLinearApproximation(
     scalar_t time, const vector_t& state, const vector_t& input,

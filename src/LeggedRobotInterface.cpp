@@ -56,9 +56,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotInterface::LeggedRobotInterface(
     const std::string& taskFileFolderName, const std::string& targetCommandFile,
     const ::urdf::ModelInterfaceSharedPtr& urdfTree) {
@@ -87,9 +84,6 @@ LeggedRobotInterface::LeggedRobotInterface(
   loadData::loadEigenMatrix(taskFile, "initialState", initialState_);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::shared_ptr<GaitSchedule> LeggedRobotInterface::loadGaitSchedule(
     const std::string& taskFile) {
   const auto initModeSchedule =
@@ -121,9 +115,6 @@ std::shared_ptr<GaitSchedule> LeggedRobotInterface::loadGaitSchedule(
       modelSettings_.phaseTransitionStanceTime);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotInterface::setupOptimalConrolProblem(
     const std::string& taskFile, const std::string& targetCommandFile,
     const ::urdf::ModelInterfaceSharedPtr& urdfTree) {
@@ -241,9 +232,6 @@ void LeggedRobotInterface::setupOptimalConrolProblem(
       centroidalModelInfo_, *referenceManagerPtr_, extendNormalizedMomentum));
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotInterface::initializeInputCostWeight(
     const std::string& taskFile, const CentroidalModelInfo& info, matrix_t& R) {
   vector_t initialState(centroidalModelInfo_.stateDim);
@@ -277,9 +265,6 @@ void LeggedRobotInterface::initializeInputCostWeight(
           .eval();
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::unique_ptr<StateInputCost> LeggedRobotInterface::getBaseTrackingCost(
     const std::string& taskFile, const CentroidalModelInfo& info) {
   matrix_t Q(info.stateDim, info.stateDim);
@@ -305,9 +290,6 @@ std::unique_ptr<StateInputCost> LeggedRobotInterface::getBaseTrackingCost(
       std::move(Q), std::move(R), info, *referenceManagerPtr_));
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::pair<scalar_t, RelaxedBarrierPenalty::Config>
 LeggedRobotInterface::loadFrictionConeSettings(
     const std::string& taskFile) const {
@@ -338,9 +320,6 @@ LeggedRobotInterface::loadFrictionConeSettings(
   return {frictionCoefficient, std::move(barrierPenaltyConfig)};
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::unique_ptr<StateInputCost> LeggedRobotInterface::getFrictionConeConstraint(
     size_t contactPointIndex, scalar_t frictionCoefficient,
     const RelaxedBarrierPenalty::Config& barrierPenaltyConfig) {
@@ -357,18 +336,12 @@ std::unique_ptr<StateInputCost> LeggedRobotInterface::getFrictionConeConstraint(
       std::move(frictionConeConstraintPtr), std::move(penalty)));
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::unique_ptr<StateInputConstraint>
 LeggedRobotInterface::getZeroForceConstraint(size_t contactPointIndex) {
   return std::unique_ptr<StateInputConstraint>(new ZeroForceConstraint(
       *referenceManagerPtr_, contactPointIndex, centroidalModelInfo_));
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::unique_ptr<StateInputConstraint>
 LeggedRobotInterface::getZeroVelocityConstraint(
     const EndEffectorKinematics<scalar_t>& eeKinematics,
@@ -396,9 +369,6 @@ LeggedRobotInterface::getZeroVelocityConstraint(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::unique_ptr<StateInputConstraint>
 LeggedRobotInterface::getNormalVelocityConstraint(
     const EndEffectorKinematics<scalar_t>& eeKinematics,

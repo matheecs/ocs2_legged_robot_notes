@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotDynamicsAD::LeggedRobotDynamicsAD(
     const PinocchioInterface& pinocchioInterface,
     const CentroidalModelInfo& info, const std::string& modelName,
@@ -43,9 +40,6 @@ LeggedRobotDynamicsAD::LeggedRobotDynamicsAD(
           pinocchioInterface, info, modelName, modelSettings.modelFolderCppAd,
           modelSettings.recompileLibrariesCppAd, modelSettings.verboseCppAd) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 vector_t LeggedRobotDynamicsAD::computeFlowMap(scalar_t time,
                                                const vector_t& state,
                                                const vector_t& input,
@@ -53,9 +47,6 @@ vector_t LeggedRobotDynamicsAD::computeFlowMap(scalar_t time,
   return pinocchioCentroidalDynamicsAd_.getValue(time, state, input);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 VectorFunctionLinearApproximation LeggedRobotDynamicsAD::linearApproximation(
     scalar_t time, const vector_t& state, const vector_t& input,
     const PreComputation& preComp) {

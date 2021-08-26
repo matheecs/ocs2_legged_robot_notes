@@ -35,9 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::ostream& operator<<(std::ostream& stream,
                          const ModeSequenceTemplate& modeSequenceTemplate) {
   stream << "Template switching times: {"
@@ -47,9 +44,6 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 ModeSequenceTemplate loadModeSequenceTemplate(const std::string& filename,
                                               const std::string& topicName,
                                               bool verbose) {
@@ -76,9 +70,6 @@ ModeSequenceTemplate loadModeSequenceTemplate(const std::string& filename,
   return {switchingTimes, modeSequence};
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 ocs2_msgs::mode_schedule createModeSequenceTemplateMsg(
     const ModeSequenceTemplate& modeSequenceTemplate) {
   ocs2_msgs::mode_schedule modeScheduleMsg;
@@ -89,9 +80,6 @@ ocs2_msgs::mode_schedule createModeSequenceTemplateMsg(
   return modeScheduleMsg;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 ModeSequenceTemplate readModeSequenceTemplateMsg(
     const ocs2_msgs::mode_schedule& modeScheduleMsg) {
   std::vector<scalar_t> switchingTimes(modeScheduleMsg.eventTimes.begin(),
@@ -101,9 +89,6 @@ ModeSequenceTemplate readModeSequenceTemplateMsg(
   return {switchingTimes, modeSequence};
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 Gait toGait(const ModeSequenceTemplate& modeSequenceTemplate) {
   const auto startTime = modeSequenceTemplate.switchingTimes.front();
   const auto endTime = modeSequenceTemplate.switchingTimes.back();
@@ -122,9 +107,6 @@ Gait toGait(const ModeSequenceTemplate& modeSequenceTemplate) {
   return gait;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 ModeSchedule loadModeSchedule(const std::string& filename,
                               const std::string& topicName, bool verbose) {
   std::vector<scalar_t> eventTimes;

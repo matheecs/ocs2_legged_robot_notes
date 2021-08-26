@@ -42,9 +42,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 /** Counts contact feet */
 inline size_t numberOfClosedContacts(const contact_flag_t& contactFlags) {
   size_t numStanceLegs = 0;
@@ -56,9 +53,6 @@ inline size_t numberOfClosedContacts(const contact_flag_t& contactFlags) {
   return numStanceLegs;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 /** Computes an input with zero joint velocity and forces which equally
  * distribute the robot weight between contact feet. */
 inline vector_t weightCompensatingInput(

@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 ZeroVelocityConstraintCppAd::ZeroVelocityConstraintCppAd(
     const SwitchedModelReferenceManager& referenceManager,
     const EndEffectorKinematics<scalar_t>& endEffectorKinematics,
@@ -45,9 +42,6 @@ ZeroVelocityConstraintCppAd::ZeroVelocityConstraintCppAd(
           endEffectorKinematics, 3, std::move(config))),
       contactPointIndex_(contactPointIndex) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 ZeroVelocityConstraintCppAd::ZeroVelocityConstraintCppAd(
     const ZeroVelocityConstraintCppAd& rhs)
     : StateInputConstraint(rhs),
@@ -55,25 +49,16 @@ ZeroVelocityConstraintCppAd::ZeroVelocityConstraintCppAd(
       eeLinearConstraintPtr_(rhs.eeLinearConstraintPtr_->clone()),
       contactPointIndex_(rhs.contactPointIndex_) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 bool ZeroVelocityConstraintCppAd::isActive(scalar_t time) const {
   return referenceManagerPtr_->getContactFlags(time)[contactPointIndex_];
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 vector_t ZeroVelocityConstraintCppAd::getValue(
     scalar_t time, const vector_t& state, const vector_t& input,
     const PreComputation& preComp) const {
   return eeLinearConstraintPtr_->getValue(time, state, input, preComp);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 VectorFunctionLinearApproximation
 ZeroVelocityConstraintCppAd::getLinearApproximation(
     scalar_t time, const vector_t& state, const vector_t& input,

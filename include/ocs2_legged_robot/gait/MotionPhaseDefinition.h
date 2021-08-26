@@ -62,9 +62,6 @@ enum ModeNumber {  // {LF, RF, LH, RH}
   STANCE = 15,
 };
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 inline contact_flag_t modeNumber2StanceLeg(const size_t& modeNumber) {
   contact_flag_t stanceLegs;  // {LF, RF, LH, RH}
 
@@ -122,9 +119,6 @@ inline contact_flag_t modeNumber2StanceLeg(const size_t& modeNumber) {
   return stanceLegs;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 inline size_t stanceLeg2ModeNumber(const contact_flag_t& stanceLegs) {
   return static_cast<size_t>(stanceLegs[3]) +
          2 * static_cast<size_t>(stanceLegs[2]) +
@@ -132,9 +126,6 @@ inline size_t stanceLeg2ModeNumber(const contact_flag_t& stanceLegs) {
          8 * static_cast<size_t>(stanceLegs[0]);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 inline std::string modeNumber2String(const size_t& modeNumber) {
   // build the map from mode number to name
   std::map<size_t, std::string> modeToName;
@@ -158,9 +149,6 @@ inline std::string modeNumber2String(const size_t& modeNumber) {
   return modeToName[modeNumber];
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 inline size_t string2ModeNumber(const std::string& modeString) {
   // build the map from name to mode number
   std::map<std::string, size_t> nameToMode;

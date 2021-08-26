@@ -36,15 +36,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 SwingTrajectoryPlanner::SwingTrajectoryPlanner(Config config, size_t numFeet)
     : config_(std::move(config)), numFeet_(numFeet) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 scalar_t SwingTrajectoryPlanner::getZvelocityConstraint(size_t leg,
                                                         scalar_t time) const {
   const auto index =
@@ -52,9 +46,6 @@ scalar_t SwingTrajectoryPlanner::getZvelocityConstraint(size_t leg,
   return feetHeightTrajectories_[leg][index].velocity(time);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 scalar_t SwingTrajectoryPlanner::getZpositionConstraint(size_t leg,
                                                         scalar_t time) const {
   const auto index =
@@ -62,9 +53,6 @@ scalar_t SwingTrajectoryPlanner::getZpositionConstraint(size_t leg,
   return feetHeightTrajectories_[leg][index].position(time);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void SwingTrajectoryPlanner::update(const ModeSchedule& modeSchedule,
                                     scalar_t terrainHeight) {
   const scalar_array_t terrainHeightSequence(modeSchedule.modeSequence.size(),
@@ -76,9 +64,6 @@ void SwingTrajectoryPlanner::update(const ModeSchedule& modeSchedule,
   update(modeSchedule, liftOffHeightSequence, touchDownHeightSequence);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void SwingTrajectoryPlanner::update(
     const ModeSchedule& modeSchedule,
     const feet_array_t<scalar_array_t>& liftOffHeightSequence,
@@ -133,9 +118,6 @@ void SwingTrajectoryPlanner::update(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::pair<std::vector<int>, std::vector<int>>
 SwingTrajectoryPlanner::updateFootSchedule(
     const std::vector<bool>& contactFlagStock) {
@@ -154,9 +136,6 @@ SwingTrajectoryPlanner::updateFootSchedule(
   return {startTimeIndexStock, finalTimeIndexStock};
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 feet_array_t<std::vector<bool>> SwingTrajectoryPlanner::extractContactFlags(
     const std::vector<size_t>& phaseIDsStock) const {
   const size_t numPhases = phaseIDsStock.size();
@@ -174,9 +153,6 @@ feet_array_t<std::vector<bool>> SwingTrajectoryPlanner::extractContactFlags(
   return contactFlagStock;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::pair<int, int> SwingTrajectoryPlanner::findIndex(
     size_t index, const std::vector<bool>& contactFlagStock) {
   const size_t numPhases = contactFlagStock.size();
@@ -207,9 +183,6 @@ std::pair<int, int> SwingTrajectoryPlanner::findIndex(
   return {startTimesIndex, finalTimesIndex};
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void SwingTrajectoryPlanner::checkThatIndicesAreValid(
     int leg, int index, int startIndex, int finalIndex,
     const std::vector<size_t>& phaseIDsStock) {
@@ -240,17 +213,11 @@ void SwingTrajectoryPlanner::checkThatIndicesAreValid(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 scalar_t SwingTrajectoryPlanner::swingTrajectoryScaling(
     scalar_t startTime, scalar_t finalTime, scalar_t swingTimeScale) {
   return std::min(1.0, (finalTime - startTime) / swingTimeScale);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 SwingTrajectoryPlanner::Config loadSwingTrajectorySettings(
     const std::string& fileName, const std::string& fieldName, bool verbose) {
   boost::property_tree::ptree pt;

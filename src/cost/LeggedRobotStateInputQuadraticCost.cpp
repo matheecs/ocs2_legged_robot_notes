@@ -34,9 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotStateInputQuadraticCost::LeggedRobotStateInputQuadraticCost(
     matrix_t Q, matrix_t R, CentroidalModelInfo info,
     const SwitchedModelReferenceManager& referenceManager)
@@ -44,17 +41,11 @@ LeggedRobotStateInputQuadraticCost::LeggedRobotStateInputQuadraticCost(
       info_(std::move(info)),
       referenceManagerPtr_(&referenceManager) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotStateInputQuadraticCost* LeggedRobotStateInputQuadraticCost::clone()
     const {
   return new LeggedRobotStateInputQuadraticCost(*this);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::pair<vector_t, vector_t>
 LeggedRobotStateInputQuadraticCost::getStateInputDeviation(
     scalar_t time, const vector_t& state, const vector_t& input,

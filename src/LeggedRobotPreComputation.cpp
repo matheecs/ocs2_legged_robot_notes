@@ -38,9 +38,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotPreComputation::LeggedRobotPreComputation(
     PinocchioInterface pinocchioInterface, CentroidalModelInfo info,
     const SwingTrajectoryPlanner& swingTrajectoryPlanner,
@@ -52,16 +49,10 @@ LeggedRobotPreComputation::LeggedRobotPreComputation(
   eeNormalVelConConfigs_.resize(info_.numThreeDofContacts);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotPreComputation* LeggedRobotPreComputation::clone() const {
   return new LeggedRobotPreComputation(*this);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotPreComputation::request(RequestSet request, scalar_t t,
                                         const vector_t& x, const vector_t& u) {
   if (!request.containsAny(Request::Cost + Request::Constraint +

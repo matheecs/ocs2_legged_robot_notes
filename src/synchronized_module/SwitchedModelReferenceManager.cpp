@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 SwitchedModelReferenceManager::SwitchedModelReferenceManager(
     std::shared_ptr<GaitSchedule> gaitSchedulePtr,
     std::shared_ptr<SwingTrajectoryPlanner> swingTrajectoryPtr)
@@ -42,17 +39,11 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(
       gaitSchedulePtr_(std::move(gaitSchedulePtr)),
       swingTrajectoryPtr_(std::move(swingTrajectoryPtr)) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 contact_flag_t SwitchedModelReferenceManager::getContactFlags(
     scalar_t time) const {
   return modeNumber2StanceLeg(this->getModeSchedule().modeAtTime(time));
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void SwitchedModelReferenceManager::modifyReferences(
     scalar_t initTime, scalar_t finalTime, const vector_t& initState,
     TargetTrajectories& targetTrajectories, ModeSchedule& modeSchedule) {

@@ -37,9 +37,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotModeSequenceKeyboard::LeggedRobotModeSequenceKeyboard(
     ros::NodeHandle nodeHandle, const std::string& gaitFile,
     const std::string& robotName, bool verbose) {
@@ -58,9 +55,6 @@ LeggedRobotModeSequenceKeyboard::LeggedRobotModeSequenceKeyboard(
   ROS_INFO_STREAM(robotName + "_mpc_mode_schedule command node is ready.");
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotModeSequenceKeyboard::getKeyboardCommand() {
   const std::string commadMsg =
       "Enter the desired gait, for the list of available gait enter \"list\"";
@@ -98,9 +92,6 @@ void LeggedRobotModeSequenceKeyboard::getKeyboardCommand() {
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotModeSequenceKeyboard::printGaitList(
     const std::vector<std::string>& gaitList) const {
   std::cout << "List of available gaits:\n";

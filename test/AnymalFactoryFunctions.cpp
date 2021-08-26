@@ -49,17 +49,11 @@ const std::string ROBOT_COMMAND_PATH =
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::unique_ptr<PinocchioInterface> createAnymalPinocchioInterface() {
   return std::unique_ptr<PinocchioInterface>(new PinocchioInterface(
       centroidal_model::createPinocchioInterface(ROBOT_URDF_PATH)));
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 CentroidalModelInfo createAnymalCentroidalModelInfo(
     const PinocchioInterface& pinocchioInterface,
     CentroidalModelType centroidalType) {
@@ -71,9 +65,6 @@ CentroidalModelInfo createAnymalCentroidalModelInfo(
       modelSettings.contactNames3DoF, modelSettings.contactNames6DoF);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 std::shared_ptr<SwitchedModelReferenceManager> createReferenceManager(
     size_t numFeet) {
   const auto initModeSchedule =

@@ -34,9 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 NormalVelocityConstraintCppAd::NormalVelocityConstraintCppAd(
     const SwitchedModelReferenceManager& referenceManager,
     const EndEffectorKinematics<scalar_t>& endEffectorKinematics,
@@ -47,9 +44,6 @@ NormalVelocityConstraintCppAd::NormalVelocityConstraintCppAd(
           new EndEffectorLinearConstraint(endEffectorKinematics, 1)),
       contactPointIndex_(contactPointIndex) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 NormalVelocityConstraintCppAd::NormalVelocityConstraintCppAd(
     const NormalVelocityConstraintCppAd& rhs)
     : StateInputConstraint(rhs),
@@ -57,16 +51,10 @@ NormalVelocityConstraintCppAd::NormalVelocityConstraintCppAd(
       eeLinearConstraintPtr_(rhs.eeLinearConstraintPtr_->clone()),
       contactPointIndex_(rhs.contactPointIndex_) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 bool NormalVelocityConstraintCppAd::isActive(scalar_t time) const {
   return !referenceManagerPtr_->getContactFlags(time)[contactPointIndex_];
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 vector_t NormalVelocityConstraintCppAd::getValue(
     scalar_t time, const vector_t& state, const vector_t& input,
     const PreComputation& preComp) const {
@@ -77,9 +65,6 @@ vector_t NormalVelocityConstraintCppAd::getValue(
   return eeLinearConstraintPtr_->getValue(time, state, input, preComp);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 VectorFunctionLinearApproximation
 NormalVelocityConstraintCppAd::getLinearApproximation(
     scalar_t time, const vector_t& state, const vector_t& input,

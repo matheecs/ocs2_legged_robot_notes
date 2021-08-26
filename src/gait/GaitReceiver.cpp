@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 GaitReceiver::GaitReceiver(ros::NodeHandle nodeHandle,
                            std::shared_ptr<GaitSchedule> gaitSchedulePtr,
                            const std::string& robotName)
@@ -47,9 +44,6 @@ GaitReceiver::GaitReceiver(ros::NodeHandle nodeHandle,
                            ::ros::TransportHints().udp());
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void GaitReceiver::preSolverRun(
     scalar_t initTime, scalar_t finalTime, const vector_t& currentState,
     const ReferenceManagerInterface& referenceManager) {
@@ -65,9 +59,6 @@ void GaitReceiver::preSolverRun(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void GaitReceiver::mpcModeSequenceCallback(
     const ocs2_msgs::mode_schedule::ConstPtr& msg) {
   std::lock_guard<std::mutex> lock(receivedGaitMutex_);

@@ -55,9 +55,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 LeggedRobotVisualizer::LeggedRobotVisualizer(
     PinocchioInterface pinocchioInterface,
     CentroidalModelInfo centroidalModelInfo,
@@ -72,9 +69,6 @@ LeggedRobotVisualizer::LeggedRobotVisualizer(
   launchVisualizerNode(nodeHandle);
 };
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::launchVisualizerNode(ros::NodeHandle& nodeHandle) {
   costDesiredBasePositionPublisher_ =
       nodeHandle.advertise<visualization_msgs::Marker>(
@@ -116,9 +110,6 @@ void LeggedRobotVisualizer::launchVisualizerNode(ros::NodeHandle& nodeHandle) {
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::update(const SystemObservation& observation,
                                    const PrimalSolution& primalSolution,
                                    const CommandData& command) {
@@ -140,9 +131,6 @@ void LeggedRobotVisualizer::update(const SystemObservation& observation,
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::publishObservation(
     ros::Time timeStamp, const SystemObservation& observation) {
   // Extract components from state
@@ -167,9 +155,6 @@ void LeggedRobotVisualizer::publishObservation(
                           feetPositions, feetForces);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::publishJointTransforms(
     ros::Time timeStamp, const vector_t& jointAngles) const {
   if (robotStatePublisherPtr_ != nullptr) {
@@ -184,9 +169,6 @@ void LeggedRobotVisualizer::publishJointTransforms(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::publishBaseTransform(ros::Time timeStamp,
                                                  const vector_t& basePose) {
   if (robotStatePublisherPtr_ != nullptr) {
@@ -203,9 +185,6 @@ void LeggedRobotVisualizer::publishBaseTransform(ros::Time timeStamp,
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::publishTrajectory(
     const std::vector<SystemObservation>& system_observation_array,
     scalar_t speed) {
@@ -221,9 +200,6 @@ void LeggedRobotVisualizer::publishTrajectory(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::publishCartesianMarkers(
     ros::Time timeStamp, const contact_flag_t& contactFlags,
     const std::vector<vector3_t>& feetPositions,
@@ -262,9 +238,6 @@ void LeggedRobotVisualizer::publishCartesianMarkers(
   currentStatePublisher_.publish(markerArray);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::publishDesiredTrajectory(
     ros::Time timeStamp, const TargetTrajectories& targetTrajectories) {
   const auto& stateTrajectory = targetTrajectories.stateTrajectory;
@@ -331,9 +304,6 @@ void LeggedRobotVisualizer::publishDesiredTrajectory(
   }
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void LeggedRobotVisualizer::publishOptimizedStateTrajectory(
     ros::Time timeStamp, const scalar_array_t& mpcTimeTrajectory,
     const vector_array_t& mpcStateTrajectory,

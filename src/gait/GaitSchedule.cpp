@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace ocs2 {
 namespace legged_robot {
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 GaitSchedule::GaitSchedule(ModeSchedule initModeSchedule,
                            ModeSequenceTemplate initModeSequenceTemplate,
                            scalar_t phaseTransitionStanceTime)
@@ -42,9 +39,6 @@ GaitSchedule::GaitSchedule(ModeSchedule initModeSchedule,
       modeSequenceTemplate_(std::move(initModeSequenceTemplate)),
       phaseTransitionStanceTime_(phaseTransitionStanceTime) {}
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void GaitSchedule::insertModeSequenceTemplate(
     const ModeSequenceTemplate& modeSequenceTemplate, scalar_t startTime,
     scalar_t finalTime) {
@@ -79,9 +73,6 @@ void GaitSchedule::insertModeSequenceTemplate(
   tileModeSequenceTemplate(startTime + phaseTransitionStanceTime, finalTime);
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 ModeSchedule GaitSchedule::getModeSchedule(scalar_t lowerBoundTime,
                                            scalar_t upperBoundTime) {
   auto& eventTimes = modeSchedule_.eventTimes;
@@ -114,9 +105,6 @@ ModeSchedule GaitSchedule::getModeSchedule(scalar_t lowerBoundTime,
   return modeSchedule_;
 }
 
-/******************************************************************************************************/
-/******************************************************************************************************/
-/******************************************************************************************************/
 void GaitSchedule::tileModeSequenceTemplate(scalar_t startTime,
                                             scalar_t finalTime) {
   auto& eventTimes = modeSchedule_.eventTimes;
