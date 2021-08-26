@@ -29,15 +29,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ocs2_legged_robot/common/ModelSettings.h"
 
+#include <ocs2_core/misc/LoadData.h>
+
 #include <boost/property_tree/info_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
-
-#include <ocs2_core/misc/LoadData.h>
 
 namespace ocs2 {
 namespace legged_robot {
 
-ModelSettings loadModelSettings(const std::string& filename, const std::string& fieldName, bool verbose) {
+ModelSettings loadModelSettings(const std::string& filename,
+                                const std::string& fieldName, bool verbose) {
   ModelSettings modelSettings;
 
   boost::property_tree::ptree pt;
@@ -45,18 +46,28 @@ ModelSettings loadModelSettings(const std::string& filename, const std::string& 
 
   if (verbose) {
     std::cerr << "\n #### Legged Robot Model Settings:";
-    std::cerr << "\n #### =============================================================================\n";
+    std::cerr << "\n #### "
+                 "============================================================="
+                 "================\n";
   }
 
-  loadData::loadPtreeValue(pt, modelSettings.positionErrorGain, fieldName + ".positionErrorGain", verbose);
-  loadData::loadPtreeValue(pt, modelSettings.phaseTransitionStanceTime, fieldName + ".phaseTransitionStanceTime", verbose);
+  loadData::loadPtreeValue(pt, modelSettings.positionErrorGain,
+                           fieldName + ".positionErrorGain", verbose);
+  loadData::loadPtreeValue(pt, modelSettings.phaseTransitionStanceTime,
+                           fieldName + ".phaseTransitionStanceTime", verbose);
 
-  loadData::loadPtreeValue(pt, modelSettings.verboseCppAd, fieldName + ".verboseCppAd", verbose);
-  loadData::loadPtreeValue(pt, modelSettings.recompileLibrariesCppAd, fieldName + ".recompileLibrariesCppAd", verbose);
-  loadData::loadPtreeValue(pt, modelSettings.modelFolderCppAd, fieldName + ".modelFolderCppAd", verbose);
+  loadData::loadPtreeValue(pt, modelSettings.verboseCppAd,
+                           fieldName + ".verboseCppAd", verbose);
+  loadData::loadPtreeValue(pt, modelSettings.recompileLibrariesCppAd,
+                           fieldName + ".recompileLibrariesCppAd", verbose);
+  loadData::loadPtreeValue(pt, modelSettings.modelFolderCppAd,
+                           fieldName + ".modelFolderCppAd", verbose);
 
   if (verbose) {
-    std::cerr << " #### =============================================================================" << std::endl;
+    std::cerr << " #### "
+                 "============================================================="
+                 "================"
+              << std::endl;
   }
 
   return modelSettings;

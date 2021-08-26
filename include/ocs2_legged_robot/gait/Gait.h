@@ -29,10 +29,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <ocs2_core/Types.h>
+
 #include <ostream>
 #include <vector>
-
-#include <ocs2_core/Types.h>
 
 namespace ocs2 {
 namespace legged_robot {
@@ -40,15 +40,17 @@ namespace legged_robot {
 /**
  * A gait is a periodic mode schedule parameterized by a "phase" variable.
  *
- * The eventPhases only indicate switches of modes, i.e. phase = 0 and phase = 1 are not part of the eventPhases.
- * The number of modes is therefore number of phases + 1
+ * The eventPhases only indicate switches of modes, i.e. phase = 0 and phase = 1
+ * are not part of the eventPhases. The number of modes is therefore number of
+ * phases + 1
  *
  * The conversion to time is regulated by a duration
  */
 struct Gait {
   /** time for one gait cycle*/
   scalar_t duration;
-  /** points in (0.0, 1.0) along the gait cycle where the contact mode changes, size N-1 */
+  /** points in (0.0, 1.0) along the gait cycle where the contact mode changes,
+   * size N-1 */
   std::vector<scalar_t> eventPhases;
   /** sequence of contact modes, size: N */
   std::vector<size_t> modeSequence;

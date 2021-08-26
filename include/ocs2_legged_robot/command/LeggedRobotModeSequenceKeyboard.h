@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
+
 #include <string>
 #include <vector>
 
@@ -42,10 +43,13 @@ namespace legged_robot {
 /** This class implements ModeSequence communication using ROS. */
 class LeggedRobotModeSequenceKeyboard {
  public:
-  LeggedRobotModeSequenceKeyboard(ros::NodeHandle nodeHandle, const std::string& gaitFile, const std::string& robotName,
+  LeggedRobotModeSequenceKeyboard(ros::NodeHandle nodeHandle,
+                                  const std::string& gaitFile,
+                                  const std::string& robotName,
                                   bool verbose = false);
 
-  /** Prints the command line interface and responds to user input. Function returns after one user input. */
+  /** Prints the command line interface and responds to user input. Function
+   * returns after one user input. */
   void getKeyboardCommand();
 
  private:

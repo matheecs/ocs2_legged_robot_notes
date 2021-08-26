@@ -29,9 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <ocs2_core/dynamics/SystemDynamicsBase.h>
-
 #include <ocs2_centroidal_model/PinocchioCentroidalDynamicsAD.h>
+#include <ocs2_core/dynamics/SystemDynamicsBase.h>
 #include <ocs2_pinocchio_interface/PinocchioInterface.h>
 
 #include "ocs2_legged_robot/common/ModelSettings.h"
@@ -41,15 +40,22 @@ namespace legged_robot {
 
 class LeggedRobotDynamicsAD final : public SystemDynamicsBase {
  public:
-  LeggedRobotDynamicsAD(const PinocchioInterface& pinocchioInterface, const CentroidalModelInfo& info, const std::string& modelName,
+  LeggedRobotDynamicsAD(const PinocchioInterface& pinocchioInterface,
+                        const CentroidalModelInfo& info,
+                        const std::string& modelName,
                         const ModelSettings& modelSettings);
 
   ~LeggedRobotDynamicsAD() override = default;
-  LeggedRobotDynamicsAD* clone() const override { return new LeggedRobotDynamicsAD(*this); }
+  LeggedRobotDynamicsAD* clone() const override {
+    return new LeggedRobotDynamicsAD(*this);
+  }
 
-  vector_t computeFlowMap(scalar_t time, const vector_t& state, const vector_t& input, const PreComputation& preComp) override;
-  VectorFunctionLinearApproximation linearApproximation(scalar_t time, const vector_t& state, const vector_t& input,
-                                                        const PreComputation& preComp) override;
+  vector_t computeFlowMap(scalar_t time, const vector_t& state,
+                          const vector_t& input,
+                          const PreComputation& preComp) override;
+  VectorFunctionLinearApproximation linearApproximation(
+      scalar_t time, const vector_t& state, const vector_t& input,
+      const PreComputation& preComp) override;
 
  private:
   LeggedRobotDynamicsAD(const LeggedRobotDynamicsAD& rhs) = default;

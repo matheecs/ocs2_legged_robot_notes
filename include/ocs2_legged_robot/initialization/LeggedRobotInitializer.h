@@ -43,15 +43,18 @@ class LeggedRobotInitializer final : public Initializer {
    * Constructor
    * @param [in] info : The centroidal model information.
    * @param [in] referenceManager : Switched system reference manager.
-   * @param [in] extendNormalizedMomentum: If true, it extrapolates the normalized momenta; otherwise sets them to zero.
+   * @param [in] extendNormalizedMomentum: If true, it extrapolates the
+   * normalized momenta; otherwise sets them to zero.
    */
-  LeggedRobotInitializer(CentroidalModelInfo info, const SwitchedModelReferenceManager& referenceManager,
+  LeggedRobotInitializer(CentroidalModelInfo info,
+                         const SwitchedModelReferenceManager& referenceManager,
                          bool extendNormalizedMomentum = false);
 
   ~LeggedRobotInitializer() override = default;
   LeggedRobotInitializer* clone() const override;
 
-  void compute(scalar_t time, const vector_t& state, scalar_t nextTime, vector_t& input, vector_t& nextState) override;
+  void compute(scalar_t time, const vector_t& state, scalar_t nextTime,
+               vector_t& input, vector_t& nextState) override;
 
  private:
   LeggedRobotInitializer(const LeggedRobotInitializer& other) = default;

@@ -27,12 +27,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
-#include <string>
-
 #include <ocs2_core/Types.h>
 #include <ocs2_core/misc/LoadData.h>
-
 #include <ocs2_ros_interfaces/command/TargetTrajectoriesKeyboardPublisher.h>
+
+#include <string>
 
 using namespace ocs2;
 
@@ -58,7 +57,8 @@ scalar_t estimateTimeToTarget(const vector_t& desiredBaseDisplacement) {
  * @param [in] commadLineTarget : [deltaX, deltaY, deltaZ, deltaYaw]
  * @param [in] observation : the current observation
  */
-TargetTrajectories commandLineToTargetTrajectories(const vector_t& commadLineTarget, const SystemObservation& observation) {
+TargetTrajectories commandLineToTargetTrajectories(
+    const vector_t& commadLineTarget, const SystemObservation& observation) {
   const vector_t currentPose = observation.state.segment<6>(6);
   const vector_t targetPose = [&]() {
     vector_t target(6);
@@ -76,7 +76,8 @@ TargetTrajectories commandLineToTargetTrajectories(const vector_t& commadLineTar
   }();
 
   // target reaching duration
-  const scalar_t targetReachingTime = observation.time + estimateTimeToTarget(targetPose - currentPose);
+  const scalar_t targetReachingTime =
+      observation.time + estimateTimeToTarget(targetPose - currentPose);
 
   // desired time trajectory
   const scalar_array_t timeTrajectory{observation.time, targetReachingTime};
@@ -87,7 +88,8 @@ TargetTrajectories commandLineToTargetTrajectories(const vector_t& commadLineTar
   stateTrajectory[1] << vector_t::Zero(6), targetPose, defaultJointState;
 
   // desired input trajectory (just right dimensions, they are not used)
-  const vector_array_t inputTrajectory(2, vector_t::Zero(observation.input.size()));
+  const vector_array_t inputTrajectory(
+      2, vector_t::Zero(observation.input.size()));
 
   return {timeTrajectory, stateTrajectory, inputTrajectory};
 }
@@ -96,7 +98,8 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> programArgs{};
   ::ros::removeROSArgs(argc, argv, programArgs);
   if (programArgs.size() < 3) {
-    throw std::runtime_error("No robot name or target command file specified. Aborting.");
+    throw std::runtime_error(
+        "No robot name or target command file specified. Aborting.");
   }
   const std::string robotName(programArgs[1]);
   const std::string targetCommandFile(programArgs[2]);
@@ -106,7 +109,8 @@ int main(int argc, char* argv[]) {
   targetDisplacementVelocity = pt.get<scalar_t>("targetDisplacementVelocity");
   targetRotationVelocity = pt.get<scalar_t>("targetRotationVelocity");
   comHeight = pt.get<scalar_t>("comHeight");
-  ocs2::loadData::loadEigenMatrix(targetCommandFile, "defaultJointState", defaultJointState);
+  ocs2::loadData::loadEigenMatrix(targetCommandFile, "defaultJointState",
+                                  defaultJointState);
 
   // ros node handle
   ::ros::init(argc, argv, robotName + "_target");
@@ -114,9 +118,13 @@ int main(int argc, char* argv[]) {
 
   // goalPose: [deltaX, deltaY, deltaZ, deltaYaw]
   const scalar_array_t relativeBaseLimit{10.0, 10.0, 0.2, 360.0};
-  TargetTrajectoriesKeyboardPublisher targetPoseCommand(nodeHandle, robotName, relativeBaseLimit, &commandLineToTargetTrajectories);
+  TargetTrajectoriesKeyboardPublisher targetPoseCommand(
+      nodeHandle, robotName, relativeBaseLimit,
+      &commandLineToTargetTrajectories);
 
-  const std::string commandMsg = "Enter XYZ and Yaw (deg) displacements for the TORSO, separated by spaces";
+  const std::string commandMsg =
+      "Enter XYZ and Yaw (deg) displacements for the TORSO, separated by "
+      "spaces";
   targetPoseCommand.publishKeyboardCommand(commandMsg);
 
   // Successful exit

@@ -38,24 +38,32 @@ namespace legged_robot {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-std::ostream& operator<<(std::ostream& stream, const ModeSequenceTemplate& modeSequenceTemplate) {
-  stream << "Template switching times: {" << toDelimitedString(modeSequenceTemplate.switchingTimes) << "}\n";
-  stream << "Template mode sequence:   {" << toDelimitedString(modeSequenceTemplate.modeSequence) << "}\n";
+std::ostream& operator<<(std::ostream& stream,
+                         const ModeSequenceTemplate& modeSequenceTemplate) {
+  stream << "Template switching times: {"
+         << toDelimitedString(modeSequenceTemplate.switchingTimes) << "}\n";
+  stream << "Template mode sequence:   {"
+         << toDelimitedString(modeSequenceTemplate.modeSequence) << "}\n";
   return stream;
 }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-ModeSequenceTemplate loadModeSequenceTemplate(const std::string& filename, const std::string& topicName, bool verbose) {
+ModeSequenceTemplate loadModeSequenceTemplate(const std::string& filename,
+                                              const std::string& topicName,
+                                              bool verbose) {
   std::vector<scalar_t> switchingTimes;
-  loadData::loadStdVector(filename, topicName + ".switchingTimes", switchingTimes, verbose);
+  loadData::loadStdVector(filename, topicName + ".switchingTimes",
+                          switchingTimes, verbose);
 
   std::vector<std::string> modeSequenceString;
-  loadData::loadStdVector(filename, topicName + ".modeSequence", modeSequenceString, verbose);
+  loadData::loadStdVector(filename, topicName + ".modeSequence",
+                          modeSequenceString, verbose);
 
   if (switchingTimes.empty() || modeSequenceString.empty()) {
-    throw std::runtime_error("[loadModeSequenceTemplate] failed to load : " + topicName + " from " + filename);
+    throw std::runtime_error("[loadModeSequenceTemplate] failed to load : " +
+                             topicName + " from " + filename);
   }
 
   // convert the mode name to mode enum
@@ -71,19 +79,25 @@ ModeSequenceTemplate loadModeSequenceTemplate(const std::string& filename, const
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-ocs2_msgs::mode_schedule createModeSequenceTemplateMsg(const ModeSequenceTemplate& modeSequenceTemplate) {
+ocs2_msgs::mode_schedule createModeSequenceTemplateMsg(
+    const ModeSequenceTemplate& modeSequenceTemplate) {
   ocs2_msgs::mode_schedule modeScheduleMsg;
-  modeScheduleMsg.eventTimes.assign(modeSequenceTemplate.switchingTimes.begin(), modeSequenceTemplate.switchingTimes.end());
-  modeScheduleMsg.modeSequence.assign(modeSequenceTemplate.modeSequence.begin(), modeSequenceTemplate.modeSequence.end());
+  modeScheduleMsg.eventTimes.assign(modeSequenceTemplate.switchingTimes.begin(),
+                                    modeSequenceTemplate.switchingTimes.end());
+  modeScheduleMsg.modeSequence.assign(modeSequenceTemplate.modeSequence.begin(),
+                                      modeSequenceTemplate.modeSequence.end());
   return modeScheduleMsg;
 }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-ModeSequenceTemplate readModeSequenceTemplateMsg(const ocs2_msgs::mode_schedule& modeScheduleMsg) {
-  std::vector<scalar_t> switchingTimes(modeScheduleMsg.eventTimes.begin(), modeScheduleMsg.eventTimes.end());
-  std::vector<size_t> modeSequence(modeScheduleMsg.modeSequence.begin(), modeScheduleMsg.modeSequence.end());
+ModeSequenceTemplate readModeSequenceTemplateMsg(
+    const ocs2_msgs::mode_schedule& modeScheduleMsg) {
+  std::vector<scalar_t> switchingTimes(modeScheduleMsg.eventTimes.begin(),
+                                       modeScheduleMsg.eventTimes.end());
+  std::vector<size_t> modeSequence(modeScheduleMsg.modeSequence.begin(),
+                                   modeScheduleMsg.modeSequence.end());
   return {switchingTimes, modeSequence};
 }
 
@@ -97,8 +111,11 @@ Gait toGait(const ModeSequenceTemplate& modeSequenceTemplate) {
   gait.duration = endTime - startTime;
   // Events: from time -> phase
   gait.eventPhases.reserve(modeSequenceTemplate.switchingTimes.size());
-  std::for_each(modeSequenceTemplate.switchingTimes.begin() + 1, modeSequenceTemplate.switchingTimes.end() - 1,
-                [&](scalar_t eventTime) { gait.eventPhases.push_back((eventTime - startTime) / gait.duration); });
+  std::for_each(
+      modeSequenceTemplate.switchingTimes.begin() + 1,
+      modeSequenceTemplate.switchingTimes.end() - 1, [&](scalar_t eventTime) {
+        gait.eventPhases.push_back((eventTime - startTime) / gait.duration);
+      });
   // Modes:
   gait.modeSequence = modeSequenceTemplate.modeSequence;
   assert(isValidGait(gait));
@@ -108,15 +125,19 @@ Gait toGait(const ModeSequenceTemplate& modeSequenceTemplate) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-ModeSchedule loadModeSchedule(const std::string& filename, const std::string& topicName, bool verbose) {
+ModeSchedule loadModeSchedule(const std::string& filename,
+                              const std::string& topicName, bool verbose) {
   std::vector<scalar_t> eventTimes;
-  loadData::loadStdVector(filename, topicName + ".eventTimes", eventTimes, verbose);
+  loadData::loadStdVector(filename, topicName + ".eventTimes", eventTimes,
+                          verbose);
 
   std::vector<std::string> modeSequenceString;
-  loadData::loadStdVector(filename, topicName + ".modeSequence", modeSequenceString, verbose);
+  loadData::loadStdVector(filename, topicName + ".modeSequence",
+                          modeSequenceString, verbose);
 
   if (modeSequenceString.empty()) {
-    throw std::runtime_error("[loadModeSchedule] failed to load : " + topicName + " from " + filename);
+    throw std::runtime_error("[loadModeSchedule] failed to load : " +
+                             topicName + " from " + filename);
   }
 
   // convert the mode name to mode enum

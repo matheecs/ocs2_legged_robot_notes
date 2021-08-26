@@ -29,11 +29,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "ocs2_legged_robot/common/Types.h"
-#include "ocs2_legged_robot/synchronized_module/SwitchedModelReferenceManager.h"
-
 #include <ocs2_centroidal_model/CentroidalModelInfo.h>
 #include <ocs2_core/constraint/StateInputConstraint.h>
+
+#include "ocs2_legged_robot/common/Types.h"
+#include "ocs2_legged_robot/synchronized_module/SwitchedModelReferenceManager.h"
 
 namespace ocs2 {
 namespace legged_robot {
@@ -41,15 +41,19 @@ namespace legged_robot {
 /**
  * Implements the constraint h(t,x,u) >= 0
  *
- * frictionCoefficient * (Fz + gripperForce) - sqrt(Fx * Fx + Fy * Fy + regularization) >= 0
+ * frictionCoefficient * (Fz + gripperForce) - sqrt(Fx * Fx + Fy * Fy +
+ * regularization) >= 0
  *
- * The gripper force shifts the origin of the friction cone down in z-direction by the amount of gripping force available. This makes it
- * possible to produce tangential forces without applying a regular normal force on that foot, or to "pull" on the foot with magnitude up to
- * the gripping force.
+ * The gripper force shifts the origin of the friction cone down in z-direction
+ * by the amount of gripping force available. This makes it possible to produce
+ * tangential forces without applying a regular normal force on that foot, or to
+ * "pull" on the foot with magnitude up to the gripping force.
  *
- * The regularization prevents the constraint gradient / hessian to go to infinity when Fx = Fz = 0. It also creates a parabolic safety
- * margin to the friction cone. For example: when Fx = Fy = 0 the constraint zero-crossing will be at Fz = 1/frictionCoefficient *
- * sqrt(regularization) instead of Fz = 0
+ * The regularization prevents the constraint gradient / hessian to go to
+ * infinity when Fx = Fz = 0. It also creates a parabolic safety margin to the
+ * friction cone. For example: when Fx = Fy = 0 the constraint zero-crossing
+ * will be at Fz = 1/frictionCoefficient * sqrt(regularization) instead of Fz =
+ * 0
  *
  */
 class FrictionConeConstraint final : public StateInputConstraint {
@@ -58,12 +62,15 @@ class FrictionConeConstraint final : public StateInputConstraint {
 
   /**
    * frictionCoefficient: The coefficient of friction.
-   * regularization: A positive number to regulize the friction constraint. refer to the FrictionConeConstraint documentation.
-   * gripperForce: Gripper force in normal direction.
-   * hessianDiagonalShift: The Hessian shift to assure a strictly-convex quadratic constraint approximation.
+   * regularization: A positive number to regulize the friction constraint.
+   * refer to the FrictionConeConstraint documentation. gripperForce: Gripper
+   * force in normal direction. hessianDiagonalShift: The Hessian shift to
+   * assure a strictly-convex quadratic constraint approximation.
    */
   struct Config {
-    explicit Config(scalar_t frictionCoefficientParam = 0.7, scalar_t regularizationParam = 25.0, scalar_t gripperForceParam = 0.0,
+    explicit Config(scalar_t frictionCoefficientParam = 0.7,
+                    scalar_t regularizationParam = 25.0,
+                    scalar_t gripperForceParam = 0.0,
                     scalar_t hessianDiagonalShiftParam = 1e-6)
         : frictionCoefficient(frictionCoefficientParam),
           regularization(regularizationParam),
@@ -87,19 +94,25 @@ class FrictionConeConstraint final : public StateInputConstraint {
    * @param [in] contactPointIndex : The 3 DoF contact index.
    * @param [in] info : The centroidal model information.
    */
-  FrictionConeConstraint(const SwitchedModelReferenceManager& referenceManager, Config config, size_t contactPointIndex,
+  FrictionConeConstraint(const SwitchedModelReferenceManager& referenceManager,
+                         Config config, size_t contactPointIndex,
                          CentroidalModelInfo info);
 
   ~FrictionConeConstraint() override = default;
-  FrictionConeConstraint* clone() const override { return new FrictionConeConstraint(*this); }
+  FrictionConeConstraint* clone() const override {
+    return new FrictionConeConstraint(*this);
+  }
 
   bool isActive(scalar_t time) const override;
   size_t getNumConstraints(scalar_t time) const override { return 1; };
-  vector_t getValue(scalar_t time, const vector_t& state, const vector_t& input, const PreComputation& preComp) const override;
-  VectorFunctionLinearApproximation getLinearApproximation(scalar_t time, const vector_t& state, const vector_t& input,
-                                                           const PreComputation& preComp) const override;
-  VectorFunctionQuadraticApproximation getQuadraticApproximation(scalar_t time, const vector_t& state, const vector_t& input,
-                                                                 const PreComputation& preComp) const override;
+  vector_t getValue(scalar_t time, const vector_t& state, const vector_t& input,
+                    const PreComputation& preComp) const override;
+  VectorFunctionLinearApproximation getLinearApproximation(
+      scalar_t time, const vector_t& state, const vector_t& input,
+      const PreComputation& preComp) const override;
+  VectorFunctionQuadraticApproximation getQuadraticApproximation(
+      scalar_t time, const vector_t& state, const vector_t& input,
+      const PreComputation& preComp) const override;
 
   /** Sets the estimated terrain normal expressed in the world frame. */
   void setSurfaceNormalInWorld(const vector3_t& surfaceNormalInWorld);
@@ -124,14 +137,20 @@ class FrictionConeConstraint final : public StateInputConstraint {
 
   FrictionConeConstraint(const FrictionConeConstraint& other) = default;
   vector_t coneConstraint(const vector3_t& localForces) const;
-  LocalForceDerivatives computeLocalForceDerivatives(const vector3_t& forcesInBodyFrame) const;
-  ConeLocalDerivatives computeConeLocalDerivatives(const vector3_t& localForces) const;
-  ConeDerivatives computeConeConstraintDerivatives(const ConeLocalDerivatives& coneLocalDerivatives,
-                                                   const LocalForceDerivatives& localForceDerivatives) const;
+  LocalForceDerivatives computeLocalForceDerivatives(
+      const vector3_t& forcesInBodyFrame) const;
+  ConeLocalDerivatives computeConeLocalDerivatives(
+      const vector3_t& localForces) const;
+  ConeDerivatives computeConeConstraintDerivatives(
+      const ConeLocalDerivatives& coneLocalDerivatives,
+      const LocalForceDerivatives& localForceDerivatives) const;
 
-  matrix_t frictionConeInputDerivative(size_t inputDim, const ConeDerivatives& coneDerivatives) const;
-  matrix_t frictionConeSecondDerivativeInput(size_t inputDim, const ConeDerivatives& coneDerivatives) const;
-  matrix_t frictionConeSecondDerivativeState(size_t stateDim, const ConeDerivatives& coneDerivatives) const;
+  matrix_t frictionConeInputDerivative(
+      size_t inputDim, const ConeDerivatives& coneDerivatives) const;
+  matrix_t frictionConeSecondDerivativeInput(
+      size_t inputDim, const ConeDerivatives& coneDerivatives) const;
+  matrix_t frictionConeSecondDerivativeState(
+      size_t stateDim, const ConeDerivatives& coneDerivatives) const;
 
   const SwitchedModelReferenceManager* referenceManagerPtr_;
 

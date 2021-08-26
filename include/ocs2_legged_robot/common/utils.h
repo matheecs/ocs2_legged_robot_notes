@@ -29,13 +29,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <ocs2_centroidal_model/AccessHelperFunctions.h>
+#include <ocs2_robotic_tools/common/RotationTransforms.h>
+
 #include <array>
 #include <cppad/cg.hpp>
 #include <iostream>
 #include <memory>
-
-#include <ocs2_centroidal_model/AccessHelperFunctions.h>
-#include <ocs2_robotic_tools/common/RotationTransforms.h>
 
 #include "ocs2_legged_robot/common/Types.h"
 
@@ -59,8 +59,11 @@ inline size_t numberOfClosedContacts(const contact_flag_t& contactFlags) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-/** Computes an input with zero joint velocity and forces which equally distribute the robot weight between contact feet. */
-inline vector_t weightCompensatingInput(const CentroidalModelInfoTpl<scalar_t>& info, const contact_flag_t& contactFlags) {
+/** Computes an input with zero joint velocity and forces which equally
+ * distribute the robot weight between contact feet. */
+inline vector_t weightCompensatingInput(
+    const CentroidalModelInfoTpl<scalar_t>& info,
+    const contact_flag_t& contactFlags) {
   const auto numStanceLegs = numberOfClosedContacts(contactFlags);
   vector_t input = vector_t::Zero(info.inputDim);
   if (numStanceLegs > 0) {
@@ -68,7 +71,8 @@ inline vector_t weightCompensatingInput(const CentroidalModelInfoTpl<scalar_t>& 
     const vector3_t forceInInertialFrame(0.0, 0.0, totalWeight / numStanceLegs);
     for (size_t i = 0; i < contactFlags.size(); i++) {
       if (contactFlags[i]) {
-        centroidal_model::getContactForces(input, i, info) = forceInInertialFrame;
+        centroidal_model::getContactForces(input, i, info) =
+            forceInInertialFrame;
       }
     }  // end of i loop
   }

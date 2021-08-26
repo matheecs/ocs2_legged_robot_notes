@@ -29,28 +29,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <ocs2_centroidal_model/CentroidalModelInfo.h>
 #include <ocs2_core/cost/QuadraticStateInputCost.h>
 
 #include "ocs2_legged_robot/synchronized_module/SwitchedModelReferenceManager.h"
 
-#include <ocs2_centroidal_model/CentroidalModelInfo.h>
-
 namespace ocs2 {
 namespace legged_robot {
 
-class LeggedRobotStateInputQuadraticCost final : public QuadraticStateInputCost {
+class LeggedRobotStateInputQuadraticCost final
+    : public QuadraticStateInputCost {
  public:
-  LeggedRobotStateInputQuadraticCost(matrix_t Q, matrix_t R, CentroidalModelInfo info,
-                                     const SwitchedModelReferenceManager& referenceManager);
+  LeggedRobotStateInputQuadraticCost(
+      matrix_t Q, matrix_t R, CentroidalModelInfo info,
+      const SwitchedModelReferenceManager& referenceManager);
 
   ~LeggedRobotStateInputQuadraticCost() override = default;
   LeggedRobotStateInputQuadraticCost* clone() const override;
 
  private:
-  LeggedRobotStateInputQuadraticCost(const LeggedRobotStateInputQuadraticCost& rhs) = default;
+  LeggedRobotStateInputQuadraticCost(
+      const LeggedRobotStateInputQuadraticCost& rhs) = default;
 
-  std::pair<vector_t, vector_t> getStateInputDeviation(scalar_t time, const vector_t& state, const vector_t& input,
-                                                       const TargetTrajectories& targetTrajectories) const override;
+  std::pair<vector_t, vector_t> getStateInputDeviation(
+      scalar_t time, const vector_t& state, const vector_t& input,
+      const TargetTrajectories& targetTrajectories) const override;
 
   const CentroidalModelInfo info_;
   const SwitchedModelReferenceManager* referenceManagerPtr_;

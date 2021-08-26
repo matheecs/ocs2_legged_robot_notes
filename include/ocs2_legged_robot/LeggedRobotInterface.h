@@ -59,12 +59,15 @@ class LeggedRobotInterface final : public RobotInterface {
    * @param [in] targetCommandFile: The path of the target command file
    * @param [in] urdfTree: Pointer to a URDF model tree
    */
-  LeggedRobotInterface(const std::string& taskFileFolderName, const std::string& targetCommandFile,
+  LeggedRobotInterface(const std::string& taskFileFolderName,
+                       const std::string& targetCommandFile,
                        const ::urdf::ModelInterfaceSharedPtr& urdfTree);
 
   ~LeggedRobotInterface() override = default;
 
-  const OptimalControlProblem& getOptimalControlProblem() const override { return *problemPtr_; }
+  const OptimalControlProblem& getOptimalControlProblem() const override {
+    return *problemPtr_;
+  }
 
   const ModelSettings& modelSettings() const { return modelSettings_; }
   const ddp::Settings& ddpSettings() const { return ddpSettings_; }
@@ -73,29 +76,49 @@ class LeggedRobotInterface final : public RobotInterface {
 
   const vector_t& getInitialState() const { return initialState_; }
   const RolloutBase& getRollout() const { return *rolloutPtr_; }
-  PinocchioInterface& getPinocchioInterface() { return *pinocchioInterfacePtr_; }
-  const CentroidalModelInfo& getCentroidalModelInfo() const { return centroidalModelInfo_; }
-  std::shared_ptr<SwitchedModelReferenceManager> getSwitchedModelReferenceManagerPtr() const { return referenceManagerPtr_; }
+  PinocchioInterface& getPinocchioInterface() {
+    return *pinocchioInterfacePtr_;
+  }
+  const CentroidalModelInfo& getCentroidalModelInfo() const {
+    return centroidalModelInfo_;
+  }
+  std::shared_ptr<SwitchedModelReferenceManager>
+  getSwitchedModelReferenceManagerPtr() const {
+    return referenceManagerPtr_;
+  }
 
-  const LeggedRobotInitializer& getInitializer() const override { return *initializerPtr_; }
-  std::shared_ptr<ReferenceManagerInterface> getReferenceManagerPtr() const override { return referenceManagerPtr_; }
+  const LeggedRobotInitializer& getInitializer() const override {
+    return *initializerPtr_;
+  }
+  std::shared_ptr<ReferenceManagerInterface> getReferenceManagerPtr()
+      const override {
+    return referenceManagerPtr_;
+  }
 
  private:
   std::shared_ptr<GaitSchedule> loadGaitSchedule(const std::string& taskFile);
-  void setupOptimalConrolProblem(const std::string& taskFile, const std::string& targetCommandFile,
-                                 const ::urdf::ModelInterfaceSharedPtr& urdfTree);
+  void setupOptimalConrolProblem(
+      const std::string& taskFile, const std::string& targetCommandFile,
+      const ::urdf::ModelInterfaceSharedPtr& urdfTree);
 
-  std::unique_ptr<StateInputCost> getBaseTrackingCost(const std::string& taskFile, const CentroidalModelInfo& info);
-  void initializeInputCostWeight(const std::string& taskFile, const CentroidalModelInfo& info, matrix_t& R);
+  std::unique_ptr<StateInputCost> getBaseTrackingCost(
+      const std::string& taskFile, const CentroidalModelInfo& info);
+  void initializeInputCostWeight(const std::string& taskFile,
+                                 const CentroidalModelInfo& info, matrix_t& R);
 
-  std::pair<scalar_t, RelaxedBarrierPenalty::Config> loadFrictionConeSettings(const std::string& taskFile) const;
-  std::unique_ptr<StateInputCost> getFrictionConeConstraint(size_t contactPointIndex, scalar_t frictionCoefficient,
-                                                            const RelaxedBarrierPenalty::Config& barrierPenaltyConfig);
-  std::unique_ptr<StateInputConstraint> getZeroForceConstraint(size_t contactPointIndex);
-  std::unique_ptr<StateInputConstraint> getZeroVelocityConstraint(const EndEffectorKinematics<scalar_t>& eeKinematics,
-                                                                  size_t contactPointIndex, bool useAnalyticalGradients);
-  std::unique_ptr<StateInputConstraint> getNormalVelocityConstraint(const EndEffectorKinematics<scalar_t>& eeKinematics,
-                                                                    size_t contactPointIndex, bool useAnalyticalGradients);
+  std::pair<scalar_t, RelaxedBarrierPenalty::Config> loadFrictionConeSettings(
+      const std::string& taskFile) const;
+  std::unique_ptr<StateInputCost> getFrictionConeConstraint(
+      size_t contactPointIndex, scalar_t frictionCoefficient,
+      const RelaxedBarrierPenalty::Config& barrierPenaltyConfig);
+  std::unique_ptr<StateInputConstraint> getZeroForceConstraint(
+      size_t contactPointIndex);
+  std::unique_ptr<StateInputConstraint> getZeroVelocityConstraint(
+      const EndEffectorKinematics<scalar_t>& eeKinematics,
+      size_t contactPointIndex, bool useAnalyticalGradients);
+  std::unique_ptr<StateInputConstraint> getNormalVelocityConstraint(
+      const EndEffectorKinematics<scalar_t>& eeKinematics,
+      size_t contactPointIndex, bool useAnalyticalGradients);
 
   bool display_;
   ModelSettings modelSettings_;

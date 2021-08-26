@@ -29,15 +29,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <ocs2_core/misc/LoadData.h>
+
+#include <boost/property_tree/info_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-
-#include <boost/property_tree/info_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-
-#include <ocs2_core/misc/LoadData.h>
 
 #include "ocs2_legged_robot/common/Types.h"
 
@@ -127,7 +126,9 @@ inline contact_flag_t modeNumber2StanceLeg(const size_t& modeNumber) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 inline size_t stanceLeg2ModeNumber(const contact_flag_t& stanceLegs) {
-  return static_cast<size_t>(stanceLegs[3]) + 2 * static_cast<size_t>(stanceLegs[2]) + 4 * static_cast<size_t>(stanceLegs[1]) +
+  return static_cast<size_t>(stanceLegs[3]) +
+         2 * static_cast<size_t>(stanceLegs[2]) +
+         4 * static_cast<size_t>(stanceLegs[1]) +
          8 * static_cast<size_t>(stanceLegs[0]);
 }
 

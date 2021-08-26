@@ -44,18 +44,26 @@ namespace legged_robot {
  */
 class SwitchedModelReferenceManager : public ReferenceManager {
  public:
-  SwitchedModelReferenceManager(std::shared_ptr<GaitSchedule> gaitSchedulePtr, std::shared_ptr<SwingTrajectoryPlanner> swingTrajectoryPtr);
+  SwitchedModelReferenceManager(
+      std::shared_ptr<GaitSchedule> gaitSchedulePtr,
+      std::shared_ptr<SwingTrajectoryPlanner> swingTrajectoryPtr);
 
   ~SwitchedModelReferenceManager() override = default;
 
   contact_flag_t getContactFlags(scalar_t time) const;
 
-  const std::shared_ptr<GaitSchedule>& getGaitSchedule() { return gaitSchedulePtr_; }
+  const std::shared_ptr<GaitSchedule>& getGaitSchedule() {
+    return gaitSchedulePtr_;
+  }
 
-  const std::shared_ptr<SwingTrajectoryPlanner>& getSwingTrajectoryPlanner() { return swingTrajectoryPtr_; }
+  const std::shared_ptr<SwingTrajectoryPlanner>& getSwingTrajectoryPlanner() {
+    return swingTrajectoryPtr_;
+  }
 
  private:
-  void modifyReferences(scalar_t initTime, scalar_t finalTime, const vector_t& initState, TargetTrajectories& targetTrajectories,
+  void modifyReferences(scalar_t initTime, scalar_t finalTime,
+                        const vector_t& initState,
+                        TargetTrajectories& targetTrajectories,
                         ModeSchedule& modeSchedule) override;
 
   std::shared_ptr<GaitSchedule> gaitSchedulePtr_;

@@ -35,21 +35,25 @@ namespace legged_robot {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-EndEffectorLinearConstraint::EndEffectorLinearConstraint(const EndEffectorKinematics<scalar_t>& endEffectorKinematics,
-                                                         size_t numConstraints, Config config)
+EndEffectorLinearConstraint::EndEffectorLinearConstraint(
+    const EndEffectorKinematics<scalar_t>& endEffectorKinematics,
+    size_t numConstraints, Config config)
     : StateInputConstraint(ConstraintOrder::Linear),
       endEffectorKinematicsPtr_(endEffectorKinematics.clone()),
       numConstraints_(numConstraints),
       config_(std::move(config)) {
   if (endEffectorKinematicsPtr_->getIds().size() != 1) {
-    throw std::runtime_error("[EndEffectorLinearConstraint] this class only accepts a single end-effector!");
+    throw std::runtime_error(
+        "[EndEffectorLinearConstraint] this class only accepts a single "
+        "end-effector!");
   }
 }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-EndEffectorLinearConstraint::EndEffectorLinearConstraint(const EndEffectorLinearConstraint& rhs)
+EndEffectorLinearConstraint::EndEffectorLinearConstraint(
+    const EndEffectorLinearConstraint& rhs)
     : StateInputConstraint(rhs),
       endEffectorKinematicsPtr_(rhs.endEffectorKinematicsPtr_->clone()),
       numConstraints_(rhs.numConstraints_),
@@ -71,14 +75,17 @@ void EndEffectorLinearConstraint::configure(Config&& config) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-vector_t EndEffectorLinearConstraint::getValue(scalar_t time, const vector_t& state, const vector_t& input,
-                                               const PreComputation& preComp) const {
+vector_t EndEffectorLinearConstraint::getValue(
+    scalar_t time, const vector_t& state, const vector_t& input,
+    const PreComputation& preComp) const {
   vector_t f = config_.b;
   if (config_.Ax.size() > 0) {
-    f.noalias() += config_.Ax * endEffectorKinematicsPtr_->getPosition(state).front();
+    f.noalias() +=
+        config_.Ax * endEffectorKinematicsPtr_->getPosition(state).front();
   }
   if (config_.Av.size() > 0) {
-    f.noalias() += config_.Av * endEffectorKinematicsPtr_->getVelocity(state, input).front();
+    f.noalias() += config_.Av *
+                   endEffectorKinematicsPtr_->getVelocity(state, input).front();
   }
   return f;
 }
@@ -86,22 +93,28 @@ vector_t EndEffectorLinearConstraint::getValue(scalar_t time, const vector_t& st
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-VectorFunctionLinearApproximation EndEffectorLinearConstraint::getLinearApproximation(scalar_t time, const vector_t& state,
-                                                                                      const vector_t& input,
-                                                                                      const PreComputation& preComp) const {
+VectorFunctionLinearApproximation
+EndEffectorLinearConstraint::getLinearApproximation(
+    scalar_t time, const vector_t& state, const vector_t& input,
+    const PreComputation& preComp) const {
   VectorFunctionLinearApproximation linearApproximation =
-      VectorFunctionLinearApproximation::Zero(getNumConstraints(time), state.size(), input.size());
+      VectorFunctionLinearApproximation::Zero(getNumConstraints(time),
+                                              state.size(), input.size());
 
   linearApproximation.f = config_.b;
 
   if (config_.Ax.size() > 0) {
-    const auto positionApprox = endEffectorKinematicsPtr_->getPositionLinearApproximation(state).front();
+    const auto positionApprox =
+        endEffectorKinematicsPtr_->getPositionLinearApproximation(state)
+            .front();
     linearApproximation.f.noalias() += config_.Ax * positionApprox.f;
     linearApproximation.dfdx.noalias() += config_.Ax * positionApprox.dfdx;
   }
 
   if (config_.Av.size() > 0) {
-    const auto velocityApprox = endEffectorKinematicsPtr_->getVelocityLinearApproximation(state, input).front();
+    const auto velocityApprox =
+        endEffectorKinematicsPtr_->getVelocityLinearApproximation(state, input)
+            .front();
     linearApproximation.f.noalias() += config_.Av * velocityApprox.f;
     linearApproximation.dfdx.noalias() += config_.Av * velocityApprox.dfdx;
     linearApproximation.dfdu.noalias() += config_.Av * velocityApprox.dfdu;

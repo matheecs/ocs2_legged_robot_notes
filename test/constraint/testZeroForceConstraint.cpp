@@ -28,9 +28,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include <ocs2_centroidal_model/AccessHelperFunctions.h>
+
+#include <iostream>
 
 #include "ocs2_legged_robot/common/ModelSettings.h"
 #include "ocs2_legged_robot/common/Types.h"
@@ -44,10 +44,15 @@ class TestZeroForceConstraint : public ::testing::Test {
  public:
   TestZeroForceConstraint() {}
 
-  const ModelSettings modelSettings;  // default constructor just to get contactNames3DoF
-  const CentroidalModelType centroidalModelType = CentroidalModelType::SingleRigidBodyDynamics;
-  std::unique_ptr<PinocchioInterface> pinocchioInterfacePtr = createAnymalPinocchioInterface();
-  const CentroidalModelInfo centroidalModelInfo = createAnymalCentroidalModelInfo(*pinocchioInterfacePtr, centroidalModelType);
+  const ModelSettings
+      modelSettings;  // default constructor just to get contactNames3DoF
+  const CentroidalModelType centroidalModelType =
+      CentroidalModelType::SingleRigidBodyDynamics;
+  std::unique_ptr<PinocchioInterface> pinocchioInterfacePtr =
+      createAnymalPinocchioInterface();
+  const CentroidalModelInfo centroidalModelInfo =
+      createAnymalCentroidalModelInfo(*pinocchioInterfacePtr,
+                                      centroidalModelType);
   const std::shared_ptr<SwitchedModelReferenceManager> referenceManagerPtr =
       createReferenceManager(centroidalModelInfo.numThreeDofContacts);
   PreComputation preComputation;
@@ -55,16 +60,19 @@ class TestZeroForceConstraint : public ::testing::Test {
 
 TEST_F(TestZeroForceConstraint, evaluate) {
   for (size_t i = 0; i < centroidalModelInfo.numThreeDofContacts; i++) {
-    ZeroForceConstraint zeroForceConstraint(*referenceManagerPtr, i, centroidalModelInfo);
+    ZeroForceConstraint zeroForceConstraint(*referenceManagerPtr, i,
+                                            centroidalModelInfo);
 
     // evaluation point
     const scalar_t t = 0.0;
     const vector_t u = vector_t::Random(centroidalModelInfo.inputDim);
     const vector_t x = vector_t::Random(centroidalModelInfo.stateDim);
-    const vector3_t eeForce = centroidal_model::getContactForces(u, i, centroidalModelInfo);
+    const vector3_t eeForce =
+        centroidal_model::getContactForces(u, i, centroidalModelInfo);
 
     const auto value = zeroForceConstraint.getValue(t, x, u, preComputation);
-    const auto approx = zeroForceConstraint.getLinearApproximation(t, x, u, preComputation);
+    const auto approx =
+        zeroForceConstraint.getLinearApproximation(t, x, u, preComputation);
 
     std::cerr << "Contact: " << modelSettings.contactNames3DoF[i] << "\n";
     std::cerr << "Value\n" << value.transpose() << "\n";
@@ -78,8 +86,10 @@ TEST_F(TestZeroForceConstraint, evaluate) {
 
 TEST_F(TestZeroForceConstraint, clone) {
   constexpr size_t eeIndex = 0;
-  ZeroForceConstraint zeroForceConstraint(*referenceManagerPtr, eeIndex, centroidalModelInfo);
-  std::unique_ptr<ZeroForceConstraint> zeroForceConstraintPtr(zeroForceConstraint.clone());
+  ZeroForceConstraint zeroForceConstraint(*referenceManagerPtr, eeIndex,
+                                          centroidalModelInfo);
+  std::unique_ptr<ZeroForceConstraint> zeroForceConstraintPtr(
+      zeroForceConstraint.clone());
 
   // evaluation point
   const scalar_t t = 0.0;
@@ -87,10 +97,13 @@ TEST_F(TestZeroForceConstraint, clone) {
   const vector_t x = vector_t::Random(centroidalModelInfo.stateDim);
 
   const auto value = zeroForceConstraint.getValue(t, x, u, preComputation);
-  const auto cloneValue = zeroForceConstraintPtr->getValue(t, x, u, preComputation);
+  const auto cloneValue =
+      zeroForceConstraintPtr->getValue(t, x, u, preComputation);
 
-  const auto approx = zeroForceConstraint.getLinearApproximation(t, x, u, preComputation);
-  const auto cloneApprox = zeroForceConstraintPtr->getLinearApproximation(t, x, u, preComputation);
+  const auto approx =
+      zeroForceConstraint.getLinearApproximation(t, x, u, preComputation);
+  const auto cloneApprox =
+      zeroForceConstraintPtr->getLinearApproximation(t, x, u, preComputation);
 
   EXPECT_TRUE(value.isApprox(cloneValue));
   EXPECT_TRUE(approx.f.isApprox(cloneApprox.f));

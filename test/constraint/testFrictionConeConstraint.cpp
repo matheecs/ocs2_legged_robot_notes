@@ -28,10 +28,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include <ocs2_centroidal_model/AccessHelperFunctions.h>
 #include <ocs2_core/misc/LinearAlgebra.h>
+
+#include <iostream>
 
 #include "ocs2_legged_robot/constraint/FrictionConeConstraint.h"
 #include "ocs2_legged_robot/test/AnymalFactoryFunctions.h"
@@ -44,9 +44,13 @@ class TestFrictionConeConstraint : public testing::Test {
   using Matrix6x = Eigen::Matrix<scalar_t, 6, Eigen::Dynamic>;
   TestFrictionConeConstraint() {}
 
-  const CentroidalModelType centroidalModelType = CentroidalModelType::SingleRigidBodyDynamics;
-  std::unique_ptr<PinocchioInterface> pinocchioInterfacePtr = createAnymalPinocchioInterface();
-  const CentroidalModelInfo centroidalModelInfo = createAnymalCentroidalModelInfo(*pinocchioInterfacePtr, centroidalModelType);
+  const CentroidalModelType centroidalModelType =
+      CentroidalModelType::SingleRigidBodyDynamics;
+  std::unique_ptr<PinocchioInterface> pinocchioInterfacePtr =
+      createAnymalPinocchioInterface();
+  const CentroidalModelInfo centroidalModelInfo =
+      createAnymalCentroidalModelInfo(*pinocchioInterfacePtr,
+                                      centroidalModelType);
   const std::shared_ptr<SwitchedModelReferenceManager> referenceManagerPtr =
       createReferenceManager(centroidalModelInfo.numThreeDofContacts);
   PreComputation preComputation;
@@ -60,8 +64,10 @@ TEST_F(TestFrictionConeConstraint, finiteDifference) {
   scalar_t tol = 1e-2;  // tolerance on the Jacobian elements
   size_t N = 10000;
 
-  for (size_t legNumber = 0; legNumber < centroidalModelInfo.numThreeDofContacts; ++legNumber) {
-    FrictionConeConstraint frictionConeConstraint(*referenceManagerPtr, config, legNumber, centroidalModelInfo);
+  for (size_t legNumber = 0;
+       legNumber < centroidalModelInfo.numThreeDofContacts; ++legNumber) {
+    FrictionConeConstraint frictionConeConstraint(
+        *referenceManagerPtr, config, legNumber, centroidalModelInfo);
 
     vector_t u0 = 10.0 * vector_t::Random(centroidalModelInfo.inputDim);
     u0(2) = 100.0;
@@ -69,8 +75,11 @@ TEST_F(TestFrictionConeConstraint, finiteDifference) {
     u0(8) = 100.0;
     u0(11) = 100.0;
     vector_t x0 = 0.1 * vector_t::Random(centroidalModelInfo.stateDim);
-    const auto y0 = frictionConeConstraint.getValue(t, x0, u0, preComputation)(0);
-    auto quadraticApproximation = frictionConeConstraint.getQuadraticApproximation(t, x0, u0, preComputation);
+    const auto y0 =
+        frictionConeConstraint.getValue(t, x0, u0, preComputation)(0);
+    auto quadraticApproximation =
+        frictionConeConstraint.getQuadraticApproximation(t, x0, u0,
+                                                         preComputation);
 
     vector_t data(N);
     matrix_t regressor(N, 6 + 6 + 6 + 9);
@@ -98,8 +107,11 @@ TEST_F(TestFrictionConeConstraint, finiteDifference) {
       }
 
       // Scale to condition the regressor
-      regressor.row(i) << dEuler.transpose() / eps, dF.transpose() / eps, quadTermsVector.transpose() / (eps * eps);
-      data(i) = (frictionConeConstraint.getValue(t, x0 + dx, u0 + du, preComputation)(0) - y0);
+      regressor.row(i) << dEuler.transpose() / eps, dF.transpose() / eps,
+          quadTermsVector.transpose() / (eps * eps);
+      data(i) = (frictionConeConstraint.getValue(t, x0 + dx, u0 + du,
+                                                 preComputation)(0) -
+                 y0);
     }
 
     vector_t dh_emperical = regressor.colPivHouseholderQr().solve(data);
@@ -122,12 +134,25 @@ TEST_F(TestFrictionConeConstraint, finiteDifference) {
     matrix_t ddhdudx_emperical = quadTerms.block<3, 3>(3, 0);
     matrix_t ddhdudu_emperical = quadTerms.block<3, 3>(3, 3);
 
-    matrix_t ddhdudu = quadraticApproximation.dfduu.front().block<3, 3>(3 * legNumber, 3 * legNumber);
+    matrix_t ddhdudu = quadraticApproximation.dfduu.front().block<3, 3>(
+        3 * legNumber, 3 * legNumber);
     matrix_t ddhdxdx = quadraticApproximation.dfdxx.front().block<3, 3>(0, 0);
-    ASSERT_LT((dhdx_emperical - quadraticApproximation.dfdx.block<1, 3>(0, 0).transpose()).array().abs().maxCoeff(), tol);
-    ASSERT_LT((dhdu_emperical - quadraticApproximation.dfdu.block<1, 3>(0, 3 * legNumber).transpose()).array().abs().maxCoeff(), tol);
+    ASSERT_LT((dhdx_emperical -
+               quadraticApproximation.dfdx.block<1, 3>(0, 0).transpose())
+                  .array()
+                  .abs()
+                  .maxCoeff(),
+              tol);
+    ASSERT_LT(
+        (dhdu_emperical -
+         quadraticApproximation.dfdu.block<1, 3>(0, 3 * legNumber).transpose())
+            .array()
+            .abs()
+            .maxCoeff(),
+        tol);
     ASSERT_LT((ddhdudu_emperical - ddhdudu).array().abs().maxCoeff(), tol);
-    // ddhdxdx and ddhdudx are off because of the negative definite hessian approximation
+    // ddhdxdx and ddhdudx are off because of the negative definite hessian
+    // approximation
   }
 }
 
@@ -142,18 +167,25 @@ TEST_F(TestFrictionConeConstraint, gravityAligned_flatTerrain) {
   vector_t x = vector_t::Random(centroidalModelInfo.stateDim);
   vector_t u = vector_t::Random(centroidalModelInfo.inputDim);
 
-  for (size_t legNumber = 0; legNumber < centroidalModelInfo.numThreeDofContacts; ++legNumber) {
-    FrictionConeConstraint frictionConeConstraint(*referenceManagerPtr, config, legNumber, centroidalModelInfo);
+  for (size_t legNumber = 0;
+       legNumber < centroidalModelInfo.numThreeDofContacts; ++legNumber) {
+    FrictionConeConstraint frictionConeConstraint(
+        *referenceManagerPtr, config, legNumber, centroidalModelInfo);
 
     // Local forces are equal to the body forces.
-    const vector_t F = centroidal_model::getContactForces(u, legNumber, centroidalModelInfo);
+    const vector_t F =
+        centroidal_model::getContactForces(u, legNumber, centroidalModelInfo);
     const auto Fx = F(0);
     const auto Fy = F(1);
     const auto Fz = F(2);
 
-    auto quadraticApproximation = frictionConeConstraint.getQuadraticApproximation(t, x, u, preComputation);
+    auto quadraticApproximation =
+        frictionConeConstraint.getQuadraticApproximation(t, x, u,
+                                                         preComputation);
 
-    ASSERT_DOUBLE_EQ(quadraticApproximation.f(0), Fz * sqrt(mu * mu) - sqrt(Fx * Fx + Fy * Fy + regularization));
+    ASSERT_DOUBLE_EQ(
+        quadraticApproximation.f(0),
+        Fz * sqrt(mu * mu) - sqrt(Fx * Fx + Fy * Fy + regularization));
 
     // First derivative inputs
     vector_t dhdu = vector_t::Zero(centroidalModelInfo.inputDim);
@@ -162,17 +194,21 @@ TEST_F(TestFrictionConeConstraint, gravityAligned_flatTerrain) {
     dhdu(3 * legNumber + 1) = -Fy / F_norm;
     dhdu(3 * legNumber + 2) = sqrt(mu * mu);
 
-    ASSERT_LT((quadraticApproximation.dfdu.row(0).transpose() - dhdu).norm(), 1e-12);
+    ASSERT_LT((quadraticApproximation.dfdu.row(0).transpose() - dhdu).norm(),
+              1e-12);
 
     // Second derivative inputs
-    matrix_t ddhdudu = matrix_t::Zero(centroidalModelInfo.inputDim, centroidalModelInfo.inputDim);
+    matrix_t ddhdudu = matrix_t::Zero(centroidalModelInfo.inputDim,
+                                      centroidalModelInfo.inputDim);
     const auto F_norm2 = Fx * Fx + Fy * Fy + regularization;
     const auto F_norm32 = pow(F_norm2, 1.5);
-    ddhdudu(3 * legNumber + 0, 3 * legNumber + 0) = -(Fy * Fy + regularization) / F_norm32;
+    ddhdudu(3 * legNumber + 0, 3 * legNumber + 0) =
+        -(Fy * Fy + regularization) / F_norm32;
     ddhdudu(3 * legNumber + 0, 3 * legNumber + 1) = Fx * Fy / F_norm32;
     ddhdudu(3 * legNumber + 0, 3 * legNumber + 2) = 0.0;
     ddhdudu(3 * legNumber + 1, 3 * legNumber + 0) = Fx * Fy / F_norm32;
-    ddhdudu(3 * legNumber + 1, 3 * legNumber + 1) = -(Fx * Fx + regularization) / F_norm32;
+    ddhdudu(3 * legNumber + 1, 3 * legNumber + 1) =
+        -(Fx * Fx + regularization) / F_norm32;
     ddhdudu(3 * legNumber + 1, 3 * legNumber + 2) = 0.0;
     ddhdudu(3 * legNumber + 2, 3 * legNumber + 0) = 0.0;
     ddhdudu(3 * legNumber + 2, 3 * legNumber + 1) = 0.0;
@@ -194,11 +230,21 @@ TEST_F(TestFrictionConeConstraint, negativeDefinite) {
   u(8) = 100.0;
   u(11) = 100.0;
 
-  for (size_t legNumber = 0; legNumber < centroidalModelInfo.numThreeDofContacts; ++legNumber) {
-    FrictionConeConstraint frictionConeConstraint(*referenceManagerPtr, config, legNumber, centroidalModelInfo);
+  for (size_t legNumber = 0;
+       legNumber < centroidalModelInfo.numThreeDofContacts; ++legNumber) {
+    FrictionConeConstraint frictionConeConstraint(
+        *referenceManagerPtr, config, legNumber, centroidalModelInfo);
 
-    const auto quadraticApproximation = frictionConeConstraint.getQuadraticApproximation(t, x, u, preComputation);
-    ASSERT_LT(LinearAlgebra::symmetricEigenvalues(quadraticApproximation.dfdxx.front()).maxCoeff(), 0.0);
-    ASSERT_LT(LinearAlgebra::symmetricEigenvalues(quadraticApproximation.dfduu.front()).maxCoeff(), 0.0);
+    const auto quadraticApproximation =
+        frictionConeConstraint.getQuadraticApproximation(t, x, u,
+                                                         preComputation);
+    ASSERT_LT(LinearAlgebra::symmetricEigenvalues(
+                  quadraticApproximation.dfdxx.front())
+                  .maxCoeff(),
+              0.0);
+    ASSERT_LT(LinearAlgebra::symmetricEigenvalues(
+                  quadraticApproximation.dfduu.front())
+                  .maxCoeff(),
+              0.0);
   }
 }

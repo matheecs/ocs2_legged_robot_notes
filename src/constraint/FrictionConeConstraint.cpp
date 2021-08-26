@@ -37,8 +37,9 @@ namespace legged_robot {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-FrictionConeConstraint::FrictionConeConstraint(const SwitchedModelReferenceManager& referenceManager, Config config,
-                                               size_t contactPointIndex, CentroidalModelInfo info)
+FrictionConeConstraint::FrictionConeConstraint(
+    const SwitchedModelReferenceManager& referenceManager, Config config,
+    size_t contactPointIndex, CentroidalModelInfo info)
     : StateInputConstraint(ConstraintOrder::Quadratic),
       referenceManagerPtr_(&referenceManager),
       config_(std::move(config)),
@@ -48,9 +49,11 @@ FrictionConeConstraint::FrictionConeConstraint(const SwitchedModelReferenceManag
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void FrictionConeConstraint::setSurfaceNormalInWorld(const vector3_t& surfaceNormalInWorld) {
+void FrictionConeConstraint::setSurfaceNormalInWorld(
+    const vector3_t& surfaceNormalInWorld) {
   t_R_w.setIdentity();
-  throw std::runtime_error("[FrictionConeConstraint] setSurfaceNormalInWorld() is not implemented!");
+  throw std::runtime_error(
+      "[FrictionConeConstraint] setSurfaceNormalInWorld() is not implemented!");
 }
 
 /******************************************************************************************************/
@@ -63,9 +66,11 @@ bool FrictionConeConstraint::isActive(scalar_t time) const {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-vector_t FrictionConeConstraint::getValue(scalar_t time, const vector_t& state, const vector_t& input,
+vector_t FrictionConeConstraint::getValue(scalar_t time, const vector_t& state,
+                                          const vector_t& input,
                                           const PreComputation& preComp) const {
-  const auto forcesInWorldFrame = centroidal_model::getContactForces(input, contactPointIndex_, info_);
+  const auto forcesInWorldFrame =
+      centroidal_model::getContactForces(input, contactPointIndex_, info_);
   const vector3_t localForce = t_R_w * forcesInWorldFrame;
   return coneConstraint(localForce);
 }
@@ -73,50 +78,64 @@ vector_t FrictionConeConstraint::getValue(scalar_t time, const vector_t& state, 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-VectorFunctionLinearApproximation FrictionConeConstraint::getLinearApproximation(scalar_t time, const vector_t& state,
-                                                                                 const vector_t& input,
-                                                                                 const PreComputation& preComp) const {
-  const vector3_t forcesInWorldFrame = centroidal_model::getContactForces(input, contactPointIndex_, info_);
+VectorFunctionLinearApproximation
+FrictionConeConstraint::getLinearApproximation(
+    scalar_t time, const vector_t& state, const vector_t& input,
+    const PreComputation& preComp) const {
+  const vector3_t forcesInWorldFrame =
+      centroidal_model::getContactForces(input, contactPointIndex_, info_);
   const vector3_t localForce = t_R_w * forcesInWorldFrame;
 
-  const auto localForceDerivatives = computeLocalForceDerivatives(forcesInWorldFrame);
+  const auto localForceDerivatives =
+      computeLocalForceDerivatives(forcesInWorldFrame);
   const auto coneLocalDerivatives = computeConeLocalDerivatives(localForce);
-  const auto coneDerivatives = computeConeConstraintDerivatives(coneLocalDerivatives, localForceDerivatives);
+  const auto coneDerivatives = computeConeConstraintDerivatives(
+      coneLocalDerivatives, localForceDerivatives);
 
   VectorFunctionLinearApproximation linearApproximation;
   linearApproximation.f = coneConstraint(localForce);
   linearApproximation.dfdx = matrix_t::Zero(1, state.size());
-  linearApproximation.dfdu = frictionConeInputDerivative(input.size(), coneDerivatives);
+  linearApproximation.dfdu =
+      frictionConeInputDerivative(input.size(), coneDerivatives);
   return linearApproximation;
 }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-VectorFunctionQuadraticApproximation FrictionConeConstraint::getQuadraticApproximation(scalar_t time, const vector_t& state,
-                                                                                       const vector_t& input,
-                                                                                       const PreComputation& preComp) const {
-  const vector3_t forcesInWorldFrame = centroidal_model::getContactForces(input, contactPointIndex_, info_);
+VectorFunctionQuadraticApproximation
+FrictionConeConstraint::getQuadraticApproximation(
+    scalar_t time, const vector_t& state, const vector_t& input,
+    const PreComputation& preComp) const {
+  const vector3_t forcesInWorldFrame =
+      centroidal_model::getContactForces(input, contactPointIndex_, info_);
   const vector3_t localForce = t_R_w * forcesInWorldFrame;
 
-  const auto localForceDerivatives = computeLocalForceDerivatives(forcesInWorldFrame);
+  const auto localForceDerivatives =
+      computeLocalForceDerivatives(forcesInWorldFrame);
   const auto coneLocalDerivatives = computeConeLocalDerivatives(localForce);
-  const auto coneDerivatives = computeConeConstraintDerivatives(coneLocalDerivatives, localForceDerivatives);
+  const auto coneDerivatives = computeConeConstraintDerivatives(
+      coneLocalDerivatives, localForceDerivatives);
 
   VectorFunctionQuadraticApproximation quadraticApproximation;
   quadraticApproximation.f = coneConstraint(localForce);
   quadraticApproximation.dfdx = matrix_t::Zero(1, state.size());
-  quadraticApproximation.dfdu = frictionConeInputDerivative(input.size(), coneDerivatives);
-  quadraticApproximation.dfdxx.emplace_back(frictionConeSecondDerivativeState(state.size(), coneDerivatives));
-  quadraticApproximation.dfduu.emplace_back(frictionConeSecondDerivativeInput(input.size(), coneDerivatives));
-  quadraticApproximation.dfdux.emplace_back(matrix_t::Zero(input.size(), state.size()));
+  quadraticApproximation.dfdu =
+      frictionConeInputDerivative(input.size(), coneDerivatives);
+  quadraticApproximation.dfdxx.emplace_back(
+      frictionConeSecondDerivativeState(state.size(), coneDerivatives));
+  quadraticApproximation.dfduu.emplace_back(
+      frictionConeSecondDerivativeInput(input.size(), coneDerivatives));
+  quadraticApproximation.dfdux.emplace_back(
+      matrix_t::Zero(input.size(), state.size()));
   return quadraticApproximation;
 }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-FrictionConeConstraint::LocalForceDerivatives FrictionConeConstraint::computeLocalForceDerivatives(
+FrictionConeConstraint::LocalForceDerivatives
+FrictionConeConstraint::computeLocalForceDerivatives(
     const vector3_t& forcesInWorldFrame) const {
   LocalForceDerivatives localForceDerivatives{};
   localForceDerivatives.dF_du = t_R_w;
@@ -126,23 +145,30 @@ FrictionConeConstraint::LocalForceDerivatives FrictionConeConstraint::computeLoc
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-FrictionConeConstraint::ConeLocalDerivatives FrictionConeConstraint::computeConeLocalDerivatives(const vector3_t& localForces) const {
+FrictionConeConstraint::ConeLocalDerivatives
+FrictionConeConstraint::computeConeLocalDerivatives(
+    const vector3_t& localForces) const {
   const auto F_x_square = localForces.x() * localForces.x();
   const auto F_y_square = localForces.y() * localForces.y();
-  const auto F_tangent_square = F_x_square + F_y_square + config_.regularization;
+  const auto F_tangent_square =
+      F_x_square + F_y_square + config_.regularization;
   const auto F_tangent_norm = sqrt(F_tangent_square);
-  const auto F_tangent_square_pow32 = F_tangent_norm * F_tangent_square;  // = F_tangent_square ^ (3/2)
+  const auto F_tangent_square_pow32 =
+      F_tangent_norm * F_tangent_square;  // = F_tangent_square ^ (3/2)
 
   ConeLocalDerivatives coneDerivatives{};
   coneDerivatives.dCone_dF(0) = -localForces.x() / F_tangent_norm;
   coneDerivatives.dCone_dF(1) = -localForces.y() / F_tangent_norm;
   coneDerivatives.dCone_dF(2) = config_.frictionCoefficient;
 
-  coneDerivatives.d2Cone_dF2(0, 0) = -(F_y_square + config_.regularization) / F_tangent_square_pow32;
-  coneDerivatives.d2Cone_dF2(0, 1) = localForces.x() * localForces.y() / F_tangent_square_pow32;
+  coneDerivatives.d2Cone_dF2(0, 0) =
+      -(F_y_square + config_.regularization) / F_tangent_square_pow32;
+  coneDerivatives.d2Cone_dF2(0, 1) =
+      localForces.x() * localForces.y() / F_tangent_square_pow32;
   coneDerivatives.d2Cone_dF2(0, 2) = 0.0;
   coneDerivatives.d2Cone_dF2(1, 0) = coneDerivatives.d2Cone_dF2(0, 1);
-  coneDerivatives.d2Cone_dF2(1, 1) = -(F_x_square + config_.regularization) / F_tangent_square_pow32;
+  coneDerivatives.d2Cone_dF2(1, 1) =
+      -(F_x_square + config_.regularization) / F_tangent_square_pow32;
   coneDerivatives.d2Cone_dF2(1, 2) = 0.0;
   coneDerivatives.d2Cone_dF2(2, 0) = 0.0;
   coneDerivatives.d2Cone_dF2(2, 1) = 0.0;
@@ -154,25 +180,34 @@ FrictionConeConstraint::ConeLocalDerivatives FrictionConeConstraint::computeCone
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-vector_t FrictionConeConstraint::coneConstraint(const vector3_t& localForces) const {
-  const auto F_tangent_square = localForces.x() * localForces.x() + localForces.y() * localForces.y() + config_.regularization;
+vector_t FrictionConeConstraint::coneConstraint(
+    const vector3_t& localForces) const {
+  const auto F_tangent_square = localForces.x() * localForces.x() +
+                                localForces.y() * localForces.y() +
+                                config_.regularization;
   const auto F_tangent_norm = sqrt(F_tangent_square);
-  const scalar_t coneConstraint = config_.frictionCoefficient * (localForces.z() + config_.gripperForce) - F_tangent_norm;
+  const scalar_t coneConstraint =
+      config_.frictionCoefficient * (localForces.z() + config_.gripperForce) -
+      F_tangent_norm;
   return (vector_t(1) << coneConstraint).finished();
 }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-FrictionConeConstraint::ConeDerivatives FrictionConeConstraint::computeConeConstraintDerivatives(
-    const ConeLocalDerivatives& coneLocalDerivatives, const LocalForceDerivatives& localForceDerivatives) const {
+FrictionConeConstraint::ConeDerivatives
+FrictionConeConstraint::computeConeConstraintDerivatives(
+    const ConeLocalDerivatives& coneLocalDerivatives,
+    const LocalForceDerivatives& localForceDerivatives) const {
   ConeDerivatives coneDerivatives;
   // First order derivatives
-  coneDerivatives.dCone_du.noalias() = coneLocalDerivatives.dCone_dF.transpose() * localForceDerivatives.dF_du;
+  coneDerivatives.dCone_du.noalias() =
+      coneLocalDerivatives.dCone_dF.transpose() * localForceDerivatives.dF_du;
 
   // Second order derivatives
   coneDerivatives.d2Cone_du2.noalias() =
-      localForceDerivatives.dF_du.transpose() * coneLocalDerivatives.d2Cone_dF2 * localForceDerivatives.dF_du;
+      localForceDerivatives.dF_du.transpose() *
+      coneLocalDerivatives.d2Cone_dF2 * localForceDerivatives.dF_du;
 
   return coneDerivatives;
 }
@@ -180,7 +215,8 @@ FrictionConeConstraint::ConeDerivatives FrictionConeConstraint::computeConeConst
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-matrix_t FrictionConeConstraint::frictionConeInputDerivative(size_t inputDim, const ConeDerivatives& coneDerivatives) const {
+matrix_t FrictionConeConstraint::frictionConeInputDerivative(
+    size_t inputDim, const ConeDerivatives& coneDerivatives) const {
   matrix_t dhdu = matrix_t::Zero(1, inputDim);
   dhdu.block<1, 3>(0, 3 * contactPointIndex_) = coneDerivatives.dCone_du;
   return dhdu;
@@ -189,9 +225,11 @@ matrix_t FrictionConeConstraint::frictionConeInputDerivative(size_t inputDim, co
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-matrix_t FrictionConeConstraint::frictionConeSecondDerivativeInput(size_t inputDim, const ConeDerivatives& coneDerivatives) const {
+matrix_t FrictionConeConstraint::frictionConeSecondDerivativeInput(
+    size_t inputDim, const ConeDerivatives& coneDerivatives) const {
   matrix_t ddhdudu = matrix_t::Zero(inputDim, inputDim);
-  ddhdudu.block<3, 3>(3 * contactPointIndex_, 3 * contactPointIndex_) = coneDerivatives.d2Cone_du2;
+  ddhdudu.block<3, 3>(3 * contactPointIndex_, 3 * contactPointIndex_) =
+      coneDerivatives.d2Cone_du2;
   ddhdudu.diagonal().array() -= config_.hessianDiagonalShift;
   return ddhdudu;
 }
@@ -199,7 +237,8 @@ matrix_t FrictionConeConstraint::frictionConeSecondDerivativeInput(size_t inputD
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-matrix_t FrictionConeConstraint::frictionConeSecondDerivativeState(size_t stateDim, const ConeDerivatives& coneDerivatives) const {
+matrix_t FrictionConeConstraint::frictionConeSecondDerivativeState(
+    size_t stateDim, const ConeDerivatives& coneDerivatives) const {
   matrix_t ddhdxdx = matrix_t::Zero(stateDim, stateDim);
   ddhdxdx.diagonal().array() -= config_.hessianDiagonalShift;
   return ddhdxdx;

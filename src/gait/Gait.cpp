@@ -44,7 +44,9 @@ namespace legged_robot {
 bool isValidGait(const Gait& gait) {
   bool validGait = true;
   validGait &= gait.duration > 0.0;
-  validGait &= std::all_of(gait.eventPhases.begin(), gait.eventPhases.end(), [](scalar_t phase) { return 0.0 < phase && phase < 1.0; });
+  validGait &=
+      std::all_of(gait.eventPhases.begin(), gait.eventPhases.end(),
+                  [](scalar_t phase) { return 0.0 < phase && phase < 1.0; });
   validGait &= std::is_sorted(gait.eventPhases.begin(), gait.eventPhases.end());
   validGait &= gait.eventPhases.size() + 1 == gait.modeSequence.size();
   return validGait;
@@ -53,9 +55,7 @@ bool isValidGait(const Gait& gait) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-bool isValidPhase(scalar_t phase) {
-  return phase >= 0.0 && phase < 1.0;
-}
+bool isValidPhase(scalar_t phase) { return phase >= 0.0 && phase < 1.0; }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
@@ -74,7 +74,8 @@ scalar_t wrapPhase(scalar_t phase) {
 int getModeIndexFromPhase(scalar_t phase, const Gait& gait) {
   assert(isValidPhase(phase));
   assert(isValidGait(gait));
-  auto firstLargerValueIterator = std::upper_bound(gait.eventPhases.begin(), gait.eventPhases.end(), phase);
+  auto firstLargerValueIterator =
+      std::upper_bound(gait.eventPhases.begin(), gait.eventPhases.end(), phase);
   return static_cast<int>(firstLargerValueIterator - gait.eventPhases.begin());
 }
 
