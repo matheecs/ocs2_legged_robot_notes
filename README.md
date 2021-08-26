@@ -465,6 +465,19 @@ void GaussNewtonDDP::runIteration(bool unreliableControllerIncrement) {
 
 ![](images/TODO.jpg)
 
+```c++
+void SwitchedModelReferenceManager::modifyReferences(
+    scalar_t initTime, scalar_t finalTime, const vector_t& initState,
+    TargetTrajectories& targetTrajectories, ModeSchedule& modeSchedule) {
+  const auto timeHorizon = finalTime - initTime;
+  modeSchedule = gaitSchedulePtr_->getModeSchedule(initTime - timeHorizon,
+                                                   finalTime + timeHorizon);
+
+  const scalar_t terrainHeight = 0.0;
+  swingTrajectoryPtr_->update(modeSchedule, terrainHeight);
+}
+```
+
 ![](images/cbf_mpc.png)
 ## References
 

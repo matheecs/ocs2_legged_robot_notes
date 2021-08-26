@@ -128,6 +128,7 @@ SwingTrajectoryPlanner::updateFootSchedule(
 
   // find the startTime and finalTime indices for swing feet
   for (size_t i = 0; i < numPhases; i++) {
+    // skip if it is a stance leg
     if (!contactFlagStock[i]) {
       std::tie(startTimeIndexStock[i], finalTimeIndexStock[i]) =
           findIndex(i, contactFlagStock);
