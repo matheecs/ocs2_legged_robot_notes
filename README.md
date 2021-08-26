@@ -18,6 +18,7 @@
     - [约束处理方法](#约束处理方法)
     - [实现细节](#实现细节)
   - [State-only Foot Placement Constraints [TODO]](#state-only-foot-placement-constraints-todo)
+    - [Illustration](#illustration)
   - [References](#references)
 
 ---
@@ -459,6 +460,10 @@ void GaussNewtonDDP::runIteration(bool unreliableControllerIncrement) {
 <img src="https://render.githubusercontent.com/render/math?math=\mathbf{h}_{i}^{s w}(\mathbf{x}, t)=\mathbf{A}_{i} \cdot \mathbf{p}_{E_{i}}(\mathbf{x})+\mathbf{b}_{i}+s(t) \cdot \mathbf{1} \geq \mathbf{0}">
 
 > For each contact phase within the MPC horizon, the terrain segment is selected that is closest to the reference end-effector position determined by <img src="https://render.githubusercontent.com/render/math?math=\mathbf{x}_{ref}(t)">, evaluated at the middle of the stance phase.
+
+### Illustration
+
+![](images/TODO.jpg)
 
 ![](images/cbf_mpc.png)
 ## References
