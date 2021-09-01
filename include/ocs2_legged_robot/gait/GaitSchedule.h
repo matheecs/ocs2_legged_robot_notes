@@ -66,6 +66,9 @@ class GaitSchedule {
       const ModeSequenceTemplate& modeSequenceTemplate, scalar_t startTime,
       scalar_t finalTime);
 
+  scalar_t getMiddleOfLastStance(const scalar_t time);
+  scalar_t getSwingTimeLeft() const;
+
  private:
   /**
    * Extends the switch information from lowerBoundTime to upperBoundTime based
@@ -82,6 +85,8 @@ class GaitSchedule {
   ModeSchedule modeSchedule_;
   ModeSequenceTemplate modeSequenceTemplate_;
   scalar_t phaseTransitionStanceTime_;
+
+  scalar_t swingTimeLeft_;
 };
 
 }  // namespace legged_robot

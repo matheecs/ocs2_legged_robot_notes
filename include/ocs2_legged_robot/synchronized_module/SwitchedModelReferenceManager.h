@@ -60,6 +60,9 @@ class SwitchedModelReferenceManager : public ReferenceManager {
     return swingTrajectoryPtr_;
   }
 
+  void setCurrentTime(scalar_t currentTime) { currentTime_ = currentTime; }
+  scalar_t getCurrentTime() const { return currentTime_; }
+
  private:
   void modifyReferences(scalar_t initTime, scalar_t finalTime,
                         const vector_t& initState,
@@ -68,6 +71,8 @@ class SwitchedModelReferenceManager : public ReferenceManager {
 
   std::shared_ptr<GaitSchedule> gaitSchedulePtr_;
   std::shared_ptr<SwingTrajectoryPlanner> swingTrajectoryPtr_;
+
+  scalar_t currentTime_;  // Start time of the optimization horizon
 };
 
 }  // namespace legged_robot

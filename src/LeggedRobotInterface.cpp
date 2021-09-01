@@ -175,6 +175,8 @@ void LeggedRobotInterface::setupOptimalConrolProblem(
   loadData::loadCppDataType(
       taskFile, "legged_robot_interface.useAnalyticalGradientsConstraints",
       useAnalyticalGradientsConstraints);
+
+  // add constraint for each leg
   for (size_t i = 0; i < centroidalModelInfo_.numThreeDofContacts; i++) {
     const std::string& footName = modelSettings_.contactNames3DoF[i];
 

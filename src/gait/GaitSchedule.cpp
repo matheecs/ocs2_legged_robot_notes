@@ -77,9 +77,9 @@ ModeSchedule GaitSchedule::getModeSchedule(scalar_t lowerBoundTime,
                                            scalar_t upperBoundTime) {
   auto& eventTimes = modeSchedule_.eventTimes;
   auto& modeSequence = modeSchedule_.modeSequence;
-  // std::lower_bound returns an iterator pointing to the first element in the
-  // range [first, last) that is not less than (i.e. greater or equal to) value,
-  // or last if no such element is found.
+  // std::lower_bound will return an iterator pointing to the first element in
+  // the range [first, last) that is not less than (i.e. greater or equal to)
+  // value, or last if no such element is found.
   const size_t index =
       std::lower_bound(eventTimes.begin(), eventTimes.end(), lowerBoundTime) -
       eventTimes.begin();
@@ -144,6 +144,21 @@ void GaitSchedule::tileModeSequenceTemplate(scalar_t startTime,
   // default final phase
   modeSequence.push_back(ModeNumber::STANCE);
 }
+
+scalar_t GaitSchedule::getMiddleOfLastStance(const scalar_t time) {
+  auto& eventTimes = modeSchedule_.eventTimes;
+  const size_t swingEndIndex =
+      std::lower_bound(eventTimes.begin(), eventTimes.end(), time) -
+      eventTimes.begin();
+
+  swingTimeLeft_ = eventTimes[swingEndIndex] - time;
+
+  const scalar_t trotGaitWholeCycle = 0.7;
+  scalar_t middle = eventTimes[swingEndIndex] - trotGaitWholeCycle * (3 / 4);
+  return middle;
+}
+
+scalar_t GaitSchedule::getSwingTimeLeft() const { return swingTimeLeft_; }
 
 }  // namespace legged_robot
 }  // namespace ocs2

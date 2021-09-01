@@ -19,6 +19,7 @@
     - [实现细节](#实现细节)
   - [State-only Foot Placement Constraints [TODO]](#state-only-foot-placement-constraints-todo)
     - [Illustration](#illustration)
+    - [执行顺序](#执行顺序)
   - [References](#references)
 
 ---
@@ -380,7 +381,7 @@ void LeggedRobotPreComputation::request(RequestSet request, scalar_t t, const ve
 
 ```c++
 // FILE: GaussNewtonDDP.cpp
-// DDP main loop
+// Description: DDP main loop
 while (!isConverged && (totalNumIterations_ - initIteration) < ddpSettings_.maxNumIterations_) {
   // display the iteration's input update norm (before caching the old nominals)
   if (ddpSettings_.displayInfo_) {
@@ -409,7 +410,7 @@ while (!isConverged && (totalNumIterations_ - initIteration) < ddpSettings_.maxN
   unreliableControllerIncrement = false;
 }  // end of while loop
 
-// Runs a single iteration of Gauss-Newton DDP
+// Description: Runs a single iteration of Gauss-Newton DDP
 void GaussNewtonDDP::runIteration(bool unreliableControllerIncrement) {
   // disable Eigen multi-threading
   Eigen::setNbThreads(1);
@@ -479,6 +480,40 @@ void SwitchedModelReferenceManager::modifyReferences(
 ```
 
 ![](images/cbf_mpc.png)
+
+### 执行顺序
+
+```c++
+// SolverBase::run
+void SolverBase::run(scalar_t initTime, const vector_t& initState, scalar_t finalTime, const scalar_array_t& partitioningTimes) {
+  preRun(initTime, initState, finalTime);
+  runImpl(initTime, initState, finalTime, partitioningTimes);
+  postRun();
+}
+void SolverBase::run(scalar_t initTime, const vector_t& initState, scalar_t finalTime, const scalar_array_t& partitioningTimes,
+                     const std::vector<ControllerBase*>& controllersPtrStock) {
+  preRun(initTime, initState, finalTime);
+  runImpl(initTime, initState, finalTime, partitioningTimes, controllersPtrStock);
+  postRun();
+}
+
+// SolverBase::preRun
+void SolverBase::preRun(scalar_t initTime, const vector_t& initState, scalar_t finalTime) {
+  referenceManagerPtr_->preSolverRun(initTime, finalTime, initState);
+
+  for (auto& module : synchronizedModules_) {
+    module->preSolverRun(initTime, finalTime, initState, *referenceManagerPtr_);
+  }
+}
+
+// ReferenceManager::preSolverRun
+void ReferenceManager::preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState) {
+  targetTrajectories_.updateFromBuffer();
+  modeSchedule_.updateFromBuffer();
+  modifyReferences(initTime, finalTime, initState, targetTrajectories_.get(), modeSchedule_.get());
+}
+```
+
 ## References
 
 - [Tutorial on OCS2 Toolbox](https://www.youtube.com/watch?v=RYmQN9GbFYg)

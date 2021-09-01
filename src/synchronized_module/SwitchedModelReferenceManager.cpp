@@ -37,7 +37,8 @@ SwitchedModelReferenceManager::SwitchedModelReferenceManager(
     std::shared_ptr<SwingTrajectoryPlanner> swingTrajectoryPtr)
     : ReferenceManager(TargetTrajectories(), ModeSchedule()),
       gaitSchedulePtr_(std::move(gaitSchedulePtr)),
-      swingTrajectoryPtr_(std::move(swingTrajectoryPtr)) {}
+      swingTrajectoryPtr_(std::move(swingTrajectoryPtr)),
+      currentTime_(0) {}
 
 contact_flag_t SwitchedModelReferenceManager::getContactFlags(
     scalar_t time) const {
@@ -47,6 +48,9 @@ contact_flag_t SwitchedModelReferenceManager::getContactFlags(
 void SwitchedModelReferenceManager::modifyReferences(
     scalar_t initTime, scalar_t finalTime, const vector_t& initState,
     TargetTrajectories& targetTrajectories, ModeSchedule& modeSchedule) {
+  setCurrentTime(initTime);
+
+  // timeHorizon == 1s
   const auto timeHorizon = finalTime - initTime;
   modeSchedule = gaitSchedulePtr_->getModeSchedule(initTime - timeHorizon,
                                                    finalTime + timeHorizon);
