@@ -52,7 +52,7 @@ class SwitchedModelReferenceManager : public ReferenceManager {
 
   contact_flag_t getContactFlags(scalar_t time) const;
 
-  const std::shared_ptr<GaitSchedule>& getGaitSchedule() {
+  const std::shared_ptr<GaitSchedule>& getGaitSchedule() const {
     return gaitSchedulePtr_;
   }
 
