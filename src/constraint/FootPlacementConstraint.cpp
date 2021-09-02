@@ -91,13 +91,18 @@ VectorFunctionLinearApproximation
 FootPlacementConstraint::getLinearApproximation(
     scalar_t time, const vector_t& state, const vector_t& input,
     const PreComputation& preComp) const {
-  VectorFunctionLinearApproximation approx;
-  approx.f = getValue(time, state, input, preComp);
-
+  VectorFunctionLinearApproximation linearApproximation =
+      VectorFunctionLinearApproximation::Zero(getNumConstraints(time),
+                                              state.size(), input.size());
   Eigen::Matrix<scalar_t, 4, 3> A;
   A << 1, 0, 0, -1, 0, 0, 0, 1, 0, 0, -1, 0;
-  approx.dfdx = A;
-  return approx;
+  const auto positionApprox =
+      endEffectorKinematicsPtr_->getPositionLinearApproximation(state).front();
+
+  linearApproximation.f.noalias() =
+      getValue(time, state, input, preComp);  // TODO use positionApprox?
+  linearApproximation.dfdx.noalias() = A * positionApprox.dfdx;
+  return linearApproximation;
 }
 }  // namespace legged_robot
 }  // namespace ocs2
