@@ -46,7 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 
 #include "ocs2_legged_robot/LeggedRobotPreComputation.h"
-#include "ocs2_legged_robot/constraint/FrictionConeConstraint.h"
+#include "ocs2_legged_robot/constraint/FootPlace.h"
+#include "ocs2_legged_robot/constraint/FootPlacementConstraint.h"
 #include "ocs2_legged_robot/constraint/NormalVelocityConstraintCppAd.h"
 #include "ocs2_legged_robot/constraint/ZeroForceConstraint.h"
 #include "ocs2_legged_robot/constraint/ZeroVelocityConstraintCppAd.h"
@@ -217,6 +218,13 @@ void LeggedRobotInterface::setupOptimalConrolProblem(
         footName + "_normalVelocity",
         getNormalVelocityConstraint(*eeKinematicsPtr, i,
                                     useAnalyticalGradientsConstraints));
+
+    const bool addFootPlacementConstraint = true;
+    if (addFootPlacementConstraint) {
+      problemPtr_->inequalityConstraintPtr->add(
+          footName + "_footPlacement",
+          getFootPlacementConstraint(*eeKinematicsPtr, i));
+    }
   }
 
   // Pre-computation
@@ -320,6 +328,15 @@ LeggedRobotInterface::loadFrictionConeSettings(
   }
 
   return {frictionCoefficient, std::move(barrierPenaltyConfig)};
+}
+
+std::unique_ptr<StateConstraint>
+LeggedRobotInterface::getFootPlacementConstraint(
+    const EndEffectorKinematics<scalar_t>& eeKinematics,
+    size_t contactPointIndex) {
+  // TODO
+  return std::unique_ptr<StateConstraint>(new FootPlacementConstraint(
+      *referenceManagerPtr_, eeKinematics, contactPointIndex));
 }
 
 std::unique_ptr<StateInputCost> LeggedRobotInterface::getFrictionConeConstraint(

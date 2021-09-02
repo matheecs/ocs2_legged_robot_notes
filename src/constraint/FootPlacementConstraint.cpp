@@ -15,7 +15,13 @@ FootPlacementConstraint::FootPlacementConstraint(
       contactPointIndex_(contactPointIndex),
       terrainGap_(0.3),
       terrainSizeX_(0.2),
-      terrainSizeY_(1.0) {}
+      terrainSizeY_(1.0) {
+  if (endEffectorKinematicsPtr_->getIds().size() != 1) {
+    throw std::runtime_error(
+        "[FootPlacementConstraint] this class only accepts a single "
+        "end-effector!");
+  }
+}
 
 FootPlacementConstraint::isActive(scalar_t time) const {
   const scalar_t trotGaitWholeCycle = 0.7;
