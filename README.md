@@ -643,7 +643,7 @@ ScalarFunctionQuadraticApproximation approximateCost(const OptimalControlProblem
 }
 ```
 
-Note: OCS2 把软约束作为 Cost 来处理，都需要提供**二阶近似函数**，还有一个地方需要提供二阶近似函数的是 inequalityConstraintPtr，即一般不等式约束；而状态方程和等式约束只需要一阶近似函数。
+Note: OCS2 把**软约束**看作 Cost，需要用户提供**二阶近似函数**，还有一个地方需要提供二阶近似函数的是 inequalityConstraintPtr，即一般**不等式约束**；而**状态方程和等式约束只需要提供一阶近似函数**。
 
 ## References
 

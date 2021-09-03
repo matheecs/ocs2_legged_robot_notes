@@ -9,7 +9,7 @@ FootPlacementConstraint::FootPlacementConstraint(
     const SwitchedModelReferenceManager& referenceManager,
     const EndEffectorKinematics<scalar_t>& endEffectorKinematics,
     size_t contactPointIndex)
-    : StateInputConstraint(ConstraintOrder::Linear),
+    : StateInputConstraint(ConstraintOrder::Quadratic),
       referenceManagerPtr_(&referenceManager),
       endEffectorKinematicsPtr_(endEffectorKinematics.clone()),
       contactPointIndex_(contactPointIndex),
@@ -91,6 +91,8 @@ VectorFunctionLinearApproximation
 FootPlacementConstraint::getLinearApproximation(
     scalar_t time, const vector_t& state, const vector_t& input,
     const PreComputation& preComp) const {
+  // TODO
+  // f(x,u) = dfdx dx + dfdu du + f
   VectorFunctionLinearApproximation linearApproximation =
       VectorFunctionLinearApproximation::Zero(getNumConstraints(time),
                                               state.size(), input.size());
@@ -99,10 +101,26 @@ FootPlacementConstraint::getLinearApproximation(
   const auto positionApprox =
       endEffectorKinematicsPtr_->getPositionLinearApproximation(state).front();
 
-  linearApproximation.f.noalias() =
-      getValue(time, state, input, preComp);  // TODO use positionApprox?
+  linearApproximation.f.noalias() = positionApprox.f;
   linearApproximation.dfdx.noalias() = A * positionApprox.dfdx;
   return linearApproximation;
 }
+
+VectorFunctionQuadraticApproximation
+FootPlacementConstraint::getQuadraticApproximation(
+    scalar_t time, const vector_t& state, const vector_t& input,
+    const PreComputation& preComp) const {
+  // TODO
+  Eigen::Matrix<scalar_t, 4, 3> A;
+  A << 1, 0, 0, -1, 0, 0, 0, 1, 0, 0, -1, 0;
+  // f[i](x,u) = 1/2 dx' dfdxx[i] dx + du' dfdux[i] dx + 1/2 du' dfduu[i] du
+  //             + dfdx[i,:] dx + dfdu[i,:] du + f[i]
+  VectorFunctionQuadraticApproximation quadraticApproximation;
+  quadraticApproximation.f.noalias() = A;
+  quadraticApproximation.dfdx.noalias() = A;
+  quadraticApproximation.dfdxx.noalias() = A;
+  return quadraticApproximation;
+};
+
 }  // namespace legged_robot
 }  // namespace ocs2
