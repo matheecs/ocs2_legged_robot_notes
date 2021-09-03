@@ -20,6 +20,7 @@
   - [State-only Foot Placement Constraints [TODO]](#state-only-foot-placement-constraints-todo)
     - [Illustration](#illustration)
     - [执行顺序](#执行顺序)
+    - [构造 LQ 问题](#构造-lq-问题)
   - [References](#references)
 
 ---
@@ -513,6 +514,136 @@ void ReferenceManager::preSolverRun(scalar_t initTime, scalar_t finalTime, const
   modifyReferences(initTime, finalTime, initState, targetTrajectories_.get(), modeSchedule_.get());
 }
 ```
+
+### 构造 LQ 问题
+
+```c++
+void LinearQuadraticApproximator::approximateLQProblem(const scalar_t& time, const vector_t& state, const vector_t& input,
+                                                       ModelData& modelData) const {
+  constexpr auto request = Request::Cost + Request::SoftConstraint + Request::Constraint + Request::Dynamics + Request::Approximation;
+  problemPtr_->preComputationPtr->request(request, time, state, input);
+
+  // dynamics
+  approximateDynamics(time, state, input, modelData);
+
+  // constraints
+  approximateConstraints(time, state, input, modelData);
+
+  // cost
+  approximateCost(time, state, input, modelData);
+}
+
+void LinearQuadraticApproximator::approximateDynamics(const scalar_t& time, const vector_t& state, const vector_t& input,
+                                                      ModelData& modelData) const {
+  // get results
+  modelData.dynamics_ = problemPtr_->dynamicsPtr->linearApproximation(time, state, input, *problemPtr_->preComputationPtr);
+  modelData.dynamicsCovariance_ = problemPtr_->dynamicsPtr->dynamicsCovariance(time, state, input);
+
+  // checking the numerical stability
+  if (checkNumericalCharacteristics_) {
+    std::string err = modelData.checkDynamicsDerivativsProperties();
+    if (!err.empty()) {
+      std::cerr << "what(): " << err << " at time " << time << " [sec]." << std::endl;
+      std::cerr << "x: " << state.transpose() << '\n';
+      std::cerr << "u: " << input.transpose() << '\n';
+      std::cerr << "Am: \n" << modelData.dynamics_.dfdx << std::endl;
+      std::cerr << "Bm: \n" << modelData.dynamics_.dfdu << std::endl;
+      throw std::runtime_error(err);
+    }
+  }
+}
+
+void LinearQuadraticApproximator::approximateConstraints(const scalar_t& time, const vector_t& state, const vector_t& input,
+                                                         ModelData& modelData) const {
+  // State-input equality constraint
+  modelData.stateInputEqConstr_ =
+      problemPtr_->equalityConstraintPtr->getLinearApproximation(time, state, input, *problemPtr_->preComputationPtr);
+  if (modelData.stateInputEqConstr_.f.rows() > input.rows()) {
+    throw std::runtime_error("Number of active state-input equality constraints should be less-equal to the input dimension.");
+  }
+
+  // State-only equality constraint
+  modelData.stateEqConstr_ = problemPtr_->stateEqualityConstraintPtr->getLinearApproximation(time, state, *problemPtr_->preComputationPtr);
+  if (modelData.stateEqConstr_.f.rows() > input.rows()) {
+    throw std::runtime_error("Number of active state-only equality constraints should be less-equal to the input dimension.");
+  }
+
+  // Inequality constraint
+  modelData.ineqConstr_ =
+      problemPtr_->inequalityConstraintPtr->getQuadraticApproximation(time, state, input, *problemPtr_->preComputationPtr);
+
+  if (checkNumericalCharacteristics_) {
+    std::string err = modelData.checkConstraintProperties();
+    if (!err.empty()) {
+      std::cerr << "what(): " << err << " at time " << time << " [sec]." << std::endl;
+      std::cerr << "x: " << state.transpose() << '\n';
+      std::cerr << "u: " << input.transpose() << '\n';
+      std::cerr << "Ev: " << modelData.stateInputEqConstr_.f.transpose() << std::endl;
+      std::cerr << "Cm: \n" << modelData.stateInputEqConstr_.dfdx << std::endl;
+      std::cerr << "Dm: \n" << modelData.stateInputEqConstr_.dfdu << std::endl;
+      std::cerr << "Hv: " << modelData.stateEqConstr_.f.transpose() << std::endl;
+      std::cerr << "Fm: \n" << modelData.stateEqConstr_.dfdx << std::endl;
+      throw std::runtime_error(err);
+    }
+  }
+}
+
+void LinearQuadraticApproximator::approximateCost(const scalar_t& time, const vector_t& state, const vector_t& input,
+                                                  ModelData& modelData) const {
+  modelData.cost_ = ocs2::approximateCost(*problemPtr_, time, state, input);
+
+  // checking the numerical stability
+  if (checkNumericalCharacteristics_) {
+    std::string err = modelData.checkCostProperties();
+    if (!err.empty()) {
+      std::cerr << "what(): " << err << " at time " << time << " [sec]." << '\n';
+      std::cerr << "x: " << state.transpose() << '\n';
+      std::cerr << "u: " << input.transpose() << '\n';
+      std::cerr << "q: " << modelData.cost_.f << '\n';
+      std::cerr << "Qv: " << modelData.cost_.dfdx.transpose() << '\n';
+      std::cerr << "Qm: \n" << modelData.cost_.dfdxx << '\n';
+      std::cerr << "Qm eigenvalues : " << LinearAlgebra::eigenvalues(modelData.cost_.dfdxx).transpose() << '\n';
+      std::cerr << "Rv: " << modelData.cost_.dfdu.transpose() << '\n';
+      std::cerr << "Rm: \n" << modelData.cost_.dfduu << '\n';
+      std::cerr << "Rm eigenvalues : " << LinearAlgebra::eigenvalues(modelData.cost_.dfduu).transpose() << '\n';
+      std::cerr << "Pm: \n" << modelData.cost_.dfdux << '\n';
+      throw std::runtime_error(err);
+    }
+  }
+}
+
+ScalarFunctionQuadraticApproximation approximateCost(const OptimalControlProblem& problem, const scalar_t& time, const vector_t& state,
+                                                     const vector_t& input) {
+  const auto& targetTrajectories = *problem.targetTrajectoriesPtr;
+  const auto& preComputation = *problem.preComputationPtr;
+
+  // get the state-input cost approximations
+  auto cost = problem.costPtr->getQuadraticApproximation(time, state, input, targetTrajectories, preComputation);
+
+  if (!problem.softConstraintPtr->empty()) {
+    cost += problem.softConstraintPtr->getQuadraticApproximation(time, state, input, targetTrajectories, preComputation);
+  }
+
+  // get the state only cost approximations
+  if (!problem.stateCostPtr->empty()) {
+    auto stateCost = problem.stateCostPtr->getQuadraticApproximation(time, state, targetTrajectories, preComputation);
+    cost.f += stateCost.f;
+    cost.dfdx += stateCost.dfdx;
+    cost.dfdxx += stateCost.dfdxx;
+  }
+
+  if (!problem.stateSoftConstraintPtr->empty()) {
+    auto stateCost = problem.stateSoftConstraintPtr->getQuadraticApproximation(time, state, targetTrajectories, preComputation);
+    cost.f += stateCost.f;
+    cost.dfdx += stateCost.dfdx;
+    cost.dfdxx += stateCost.dfdxx;
+  }
+
+  return cost;
+}
+```
+
+Note: OCS2 把软约束作为 Cost 来处理，都需要提供**二阶近似函数**，还有一个地方需要提供二阶近似函数的是 inequalityConstraintPtr，即一般不等式约束；而状态方程和等式约束只需要一阶近似函数。
 
 ## References
 
