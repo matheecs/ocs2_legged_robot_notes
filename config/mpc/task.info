@@ -43,12 +43,14 @@ defaultModeSequenceTemplate
 {
   modeSequence
   {
-    [0]  STANCE
+    [0]     LF_RH
+    [1]     RF_LH
   }
   switchingTimes
   {
-    [0]  0.0
-    [1]  1.0
+    [0]     0.0
+    [1]     0.35
+    [2]     0.70
   }
 }
 
@@ -57,7 +59,7 @@ ddp
 {
   algorithm                       SLQ
 
-  nThreads                        3
+  nThreads                        1
   threadPriority                  50
 
   maxNumIterations                10
