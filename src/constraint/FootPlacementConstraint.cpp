@@ -170,6 +170,12 @@ FootPlacementConstraint::getQuadraticApproximation(
             << quadraticApproximation.dfdx << std::endl;
   std::cout << "quadraticApproximation.dfdxx[0] = \n"
             << quadraticApproximation.dfdxx[0] << std::endl;
+  std::cout << "quadraticApproximation.dfdxx[1] = \n"
+            << quadraticApproximation.dfdxx[1] << std::endl;
+  std::cout << "quadraticApproximation.dfdxx[2] = \n"
+            << quadraticApproximation.dfdxx[2] << std::endl;
+  std::cout << "quadraticApproximation.dfdxx[3] = \n"
+            << quadraticApproximation.dfdxx[3] << std::endl;
   std::cout << "quadraticApproximation.dfdxx.size() = \n"
             << quadraticApproximation.dfdxx.size() << std::endl;
 
