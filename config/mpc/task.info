@@ -13,7 +13,7 @@ model_settings
   phaseTransitionStanceTime     0.4
 
   verboseCppAd                  true
-  recompileLibrariesCppAd       true
+  recompileLibrariesCppAd       false
   modelFolderCppAd              /tmp/ocs2
 }
 
@@ -68,7 +68,7 @@ ddp
 
   displayInfo                     false
   displayShortSummary             false
-  checkNumericalStability         false
+  checkNumericalStability         true
   debugPrintRollout               false
   debugCaching                    false
 
@@ -105,7 +105,7 @@ rollout
   RelTolODE                       1e-3
   timeStep                        1e-2
   maxNumStepsPerSecond            10000
-  checkNumericalStability         false
+  checkNumericalStability         true
 }
 
 mpc
