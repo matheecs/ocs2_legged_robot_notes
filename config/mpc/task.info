@@ -13,7 +13,7 @@ model_settings
   phaseTransitionStanceTime     0.4
 
   verboseCppAd                  true
-  recompileLibrariesCppAd       false
+  recompileLibrariesCppAd       true
   modelFolderCppAd              /tmp/ocs2
 }
 
@@ -59,7 +59,7 @@ ddp
 {
   algorithm                       SLQ
 
-  nThreads                        1
+  nThreads                        3
   threadPriority                  50
 
   maxNumIterations                10
@@ -68,7 +68,7 @@ ddp
 
   displayInfo                     false
   displayShortSummary             false
-  checkNumericalStability         true
+  checkNumericalStability         false
   debugPrintRollout               false
   debugCaching                    false
 
@@ -105,7 +105,7 @@ rollout
   RelTolODE                       1e-3
   timeStep                        1e-2
   maxNumStepsPerSecond            10000
-  checkNumericalStability         true
+  checkNumericalStability         false
 }
 
 mpc
@@ -121,7 +121,7 @@ mpc
   initMinStepLength               1e-2
   initMaxStepLength               1.0
 
-  debugPrint                      false
+  debugPrint                      true
   coldStart                       false
 
   useParallelRiccatiSolver        true ; use disjoint riccati solver in multi-thread case

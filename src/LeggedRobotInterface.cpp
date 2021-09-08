@@ -222,11 +222,16 @@ void LeggedRobotInterface::setupOptimalConrolProblem(
         getNormalVelocityConstraint(*eeKinematicsPtr, i,
                                     useAnalyticalGradientsConstraints));
 
-    const bool addFootPlacementConstraint = true;
-    if (addFootPlacementConstraint) {
+    const bool useSoftConstraint = true;
+    if (!useSoftConstraint) {
       problemPtr_->inequalityConstraintPtr->add(
           footName + "_footPlacement",
           getFootPlacementConstraint(*eeKinematicsPtr, i));
+    } else {
+      problemPtr_->softConstraintPtr->add(
+          footName + "_footPlacement",
+          getFootPlacementConstraint(*eeKinematicsPtr, i,
+                                     barrierPenaltyConfig));
     }
   }
 
@@ -340,6 +345,21 @@ LeggedRobotInterface::getFootPlacementConstraint(
   return std::unique_ptr<StateInputConstraint>(new FootPlacementConstraint(
       *referenceManagerPtr_, eeKinematics, contactPointIndex));
 }
+
+std::unique_ptr<StateInputCost>
+LeggedRobotInterface::getFootPlacementConstraint(
+    const EndEffectorKinematics<scalar_t>& eeKinematics,
+    size_t contactPointIndex,
+    const RelaxedBarrierPenalty::Config& barrierPenaltyConfig) {
+  std::unique_ptr<FootPlacementConstraint> footPlacementConstraintPtr(
+      new FootPlacementConstraint(*referenceManagerPtr_, eeKinematics,
+                                  contactPointIndex));
+  std::unique_ptr<PenaltyBase> penalty(
+      new RelaxedBarrierPenalty(barrierPenaltyConfig));
+
+  return std::unique_ptr<StateInputCost>(new StateInputSoftConstraint(
+      std::move(footPlacementConstraintPtr), std::move(penalty)));
+};
 
 std::unique_ptr<StateInputCost> LeggedRobotInterface::getFrictionConeConstraint(
     size_t contactPointIndex, scalar_t frictionCoefficient,

@@ -111,6 +111,10 @@ class LeggedRobotInterface final : public RobotInterface {
   std::unique_ptr<StateInputConstraint> getFootPlacementConstraint(
       const EndEffectorKinematics<scalar_t>& eeKinematics,
       size_t contactPointIndex);
+  std::unique_ptr<StateInputCost> getFootPlacementConstraint(
+      const EndEffectorKinematics<scalar_t>& eeKinematics,
+      size_t contactPointIndex,
+      const RelaxedBarrierPenalty::Config& barrierPenaltyConfig);
   std::unique_ptr<StateInputCost> getFrictionConeConstraint(
       size_t contactPointIndex, scalar_t frictionCoefficient,
       const RelaxedBarrierPenalty::Config& barrierPenaltyConfig);

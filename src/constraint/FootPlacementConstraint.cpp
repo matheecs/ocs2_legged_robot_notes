@@ -87,7 +87,6 @@ vector_t FootPlacementConstraint::getValue(
   // Step 6 add constraint Ax + b + s >=0
   vector3_t pEE = endEffectorKinematicsPtr_->getPosition(state).front();
 
-  std::cout << "Value = \n" << A * pEE + b + s << "\n";
   return A * pEE + b + s;
 }
 
@@ -151,10 +150,12 @@ FootPlacementConstraint::getQuadraticApproximation(
   VectorFunctionQuadraticApproximation positionQuadraticApproximation =
       endEffectorKinematicsPtr_->getPositionQuadraticApproximation(state)
           .front();
+
+  const auto numConstraints = getNumConstraints(time);
   VectorFunctionQuadraticApproximation quadraticApproximation;
+  quadraticApproximation.setZero(numConstraints, state.rows(), input.rows());
   quadraticApproximation.f = A * positionQuadraticApproximation.f + b + s;
   quadraticApproximation.dfdx = A * positionQuadraticApproximation.dfdx;
-
   quadraticApproximation.dfdxx.emplace_back(
       1 * positionQuadraticApproximation.dfdxx[0]);
   quadraticApproximation.dfdxx.emplace_back(
@@ -163,11 +164,6 @@ FootPlacementConstraint::getQuadraticApproximation(
       1 * positionQuadraticApproximation.dfdxx[1]);
   quadraticApproximation.dfdxx.emplace_back(
       -1 * positionQuadraticApproximation.dfdxx[1]);
-
-  std::cout << "quadraticApproximation.f = \n"
-            << quadraticApproximation.f << std::endl;
-  std::cout << "quadraticApproximation.dfdx = \n"
-            << quadraticApproximation.dfdx << std::endl;
 
   return quadraticApproximation;
 };
