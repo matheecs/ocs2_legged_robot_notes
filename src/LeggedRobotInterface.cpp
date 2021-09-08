@@ -30,13 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <string>
 
+/*****************************************************************************/
 #include <pinocchio/fwd.hpp>  // forward declarations must be included first.
-
-#include <pinocchio/algorithm/frames.hpp>
-#include <pinocchio/algorithm/jacobian.hpp>
-#include <pinocchio/algorithm/kinematics.hpp>
-
-#include "ocs2_legged_robot/LeggedRobotInterface.h"
+/*****************************************************************************/
 
 #include <ocs2_centroidal_model/AccessHelperFunctions.h>
 #include <ocs2_centroidal_model/CentroidalModelPinocchioMapping.h>
@@ -45,7 +41,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ocs2_core/soft_constraint/StateInputSoftConstraint.h>
 #include <ocs2_oc/synchronized_module/SolverSynchronizedModule.h>
 #include <ocs2_pinocchio_interface/PinocchioEndEffectorKinematicsCppAd.h>
+#include <ros/package.h>
 
+#include <pinocchio/algorithm/frames.hpp>
+#include <pinocchio/algorithm/jacobian.hpp>
+#include <pinocchio/algorithm/kinematics.hpp>
+
+#include "ocs2_legged_robot/LeggedRobotInterface.h"
 #include "ocs2_legged_robot/LeggedRobotPreComputation.h"
 #include "ocs2_legged_robot/constraint/FootPlacementConstraint.h"
 #include "ocs2_legged_robot/constraint/FrictionConeConstraint.h"
@@ -54,8 +56,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ocs2_legged_robot/constraint/ZeroVelocityConstraintCppAd.h"
 #include "ocs2_legged_robot/cost/LeggedRobotStateInputQuadraticCost.h"
 #include "ocs2_legged_robot/dynamics/LeggedRobotDynamicsAD.h"
-
-#include <ros/package.h>
 
 namespace ocs2 {
 namespace legged_robot {
