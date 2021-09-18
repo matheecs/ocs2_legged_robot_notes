@@ -30,9 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <string>
 
-/*****************************************************************************/
+// clang-format off
 #include <pinocchio/fwd.hpp>  // forward declarations must be included first.
-/*****************************************************************************/
+// clang-format on
 
 #include <ocs2_centroidal_model/AccessHelperFunctions.h>
 #include <ocs2_centroidal_model/CentroidalModelPinocchioMapping.h>
@@ -222,12 +222,15 @@ void LeggedRobotInterface::setupOptimalConrolProblem(
         getNormalVelocityConstraint(*eeKinematicsPtr, i,
                                     useAnalyticalGradientsConstraints));
 
-    const bool useSoftConstraint = true;
-    if (!useSoftConstraint) {
+    const bool useHardConstraint = true;
+    // Hard constraint
+    if (useHardConstraint) {
       problemPtr_->inequalityConstraintPtr->add(
           footName + "_footPlacement",
           getFootPlacementConstraint(*eeKinematicsPtr, i));
-    } else {
+    }
+    // Soft constraint
+    else {
       problemPtr_->softConstraintPtr->add(
           footName + "_footPlacement",
           getFootPlacementConstraint(*eeKinematicsPtr, i,

@@ -157,11 +157,11 @@ FootPlacementConstraint::getQuadraticApproximation(
   quadraticApproximation.f = A * positionQuadraticApproximation.f + b + s;
   quadraticApproximation.dfdx = A * positionQuadraticApproximation.dfdx;
   quadraticApproximation.dfdxx.emplace_back(
-      1 * positionQuadraticApproximation.dfdxx[0]);
+      positionQuadraticApproximation.dfdxx[0]);
   quadraticApproximation.dfdxx.emplace_back(
       -1 * positionQuadraticApproximation.dfdxx[0]);
   quadraticApproximation.dfdxx.emplace_back(
-      1 * positionQuadraticApproximation.dfdxx[1]);
+      positionQuadraticApproximation.dfdxx[1]);
   quadraticApproximation.dfdxx.emplace_back(
       -1 * positionQuadraticApproximation.dfdxx[1]);
 
