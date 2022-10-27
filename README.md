@@ -1,4 +1,4 @@
-- [ocs2_legged_robot_annotated](#ocs2_legged_robot_annotated)
+- [ocs2_legged_robot_notes](#ocs2_legged_robot_notes)
   - [MIT 控制框架](#mit-控制框架)
   - [ETH 控制框架](#eth-控制框架)
     - [ROS 节点图](#ros-节点图)
@@ -25,7 +25,7 @@
 
 ---
 
-# ocs2_legged_robot_annotated
+# ocs2_legged_robot_notes
 
 > 足式机器人的例子是一个开关系统问题。它实现了一个四足机器人Anymal运动控制的MPC方法。机器人的步态由用户定义，在执行过程中可以通过求解器的同步模块 (GaitReceiver) 进行修改。模式序列和目标轨迹是通过一个参考管理器模块 (SwitchedModelReferenceManager) 定义的。代价函数是一个二次罚函数，以跟踪机器人身体位置和偏航指令，并将机器人的重量平均分配到触地腿上。该问题有几个随模式变化的约束条件：摆动腿的地面作用力为零；触地腿的速度为零；摩擦锥约束；为避免足端和地面摩擦，摆动腿末端须跟踪一个预定的Z向运动。
 
